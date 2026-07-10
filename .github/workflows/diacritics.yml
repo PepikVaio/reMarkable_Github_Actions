@@ -1,9 +1,17 @@
 name: Restore Czech text and translate
 
 on:
-  push:
-    paths:
-      - "**/*.md"
+  workflow_call:
+  inputs:
+    translate_source:
+      required: false
+      type: string
+      default: ".language/README.cs.md"
+
+    translate_source_language:
+      required: false
+      type: string
+      default: "cs"
 
 env:
   # ======================================
@@ -57,9 +65,12 @@ env:
   # TRANSLATE_OUTPUT_OTHER: .language
   # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
   # ===============================================================
-  TRANSLATE_SOURCE: .language/README.cs.md
-  TRANSLATE_SOURCE_LANGUAGE: cs
-  
+
+  # TRANSLATE_SOURCE: .language/README.cs.md
+  # TRANSLATE_SOURCE_LANGUAGE: cs
+  TRANSLATE_SOURCE: ${{ inputs.translate_source }}
+  TRANSLATE_SOURCE_LANGUAGE: ${{ inputs.translate_source_language }}
+
   TRANSLATE_OUTPUT_MAIN: README.md
   TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
   

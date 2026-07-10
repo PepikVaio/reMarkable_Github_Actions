@@ -89,7 +89,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: PepikVaio/reMarkable_Github_Actions
-          path: .
+          path: .tools
 
 
       - name: Setup Python

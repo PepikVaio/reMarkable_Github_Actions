@@ -2,16 +2,16 @@ name: Restore Czech text and translate
 
 on:
   workflow_call:
-  inputs:
-    translate_source:
-      required: false
-      type: string
-      default: ".language/README.cs.md"
+    inputs:
+      translate_source:
+        required: false
+        type: string
+        default: ".language/README.cs.md"
 
-    translate_source_language:
-      required: false
-      type: string
-      default: "cs"
+      translate_source_language:
+        required: false
+        type: string
+        default: "cs"
 
 env:
   # ======================================

@@ -12,6 +12,17 @@ inputs:
     required: false
     default: "false"
 
+  diacritics_api:
+    description: "Diacritics API URL"
+    required: false
+    default: "http://lindat.mff.cuni.cz/services/korektor/api/correct"
+
+  diacritics_model:
+    description: "Diacritics model"
+    required: false
+    default: "czech-diacritics_generator"
+
+
 runs:
   using: "composite"
   steps:
@@ -24,6 +35,9 @@ runs:
     - name: Restore Czech diacritics
       if: inputs.run_diacritics == 'true'
       shell: bash
+      env:
+        DIACRITICS_API: ${{ inputs.diacritics_api }}
+        DIACRITICS_MODEL: ${{ inputs.diacritics_model }}
       run: |
         python ${{ github.action_path }}/.tools/diacritics.py
 

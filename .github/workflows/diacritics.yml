@@ -91,6 +91,14 @@ jobs:
           repository: PepikVaio/reMarkable_Github_Actions
           path: .github/.tools
 
+
+
+      - name: Debug - list checked out tools
+        run: find .github/.tools -type f
+
+
+
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

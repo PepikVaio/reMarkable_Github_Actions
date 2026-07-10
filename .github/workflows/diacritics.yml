@@ -12,8 +12,8 @@ env:
 
   # PATH_DIACRITICS: .tools/diacritics.py
   # PATH_TRANSLATE: .tools/translate.py
-  PATH_DIACRITICS: tools/.tools/diacritics.py
-  PATH_TRANSLATE: tools/.tools/translate.py
+  PATH_DIACRITICS: ./tools/.tools/diacritics.py
+  PATH_TRANSLATE: ./tools/.tools/translate.py
 
   # ==================================================
   # CONFIG DIACRITICS (editable for cs)
@@ -83,7 +83,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: PepikVaio/reMarkable_Github_Actions
-          path: tools
+          path: ./tools
 
       - name: Setup Python
         uses: actions/setup-python@v5

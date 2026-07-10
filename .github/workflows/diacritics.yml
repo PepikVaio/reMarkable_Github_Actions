@@ -10,8 +10,10 @@ env:
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
 
-  PATH_DIACRITICS: .tools/diacritics.py
-  PATH_TRANSLATE: .tools/translate.py
+  # PATH_DIACRITICS: .tools/diacritics.py
+  # PATH_TRANSLATE: .tools/translate.py
+  PATH_DIACRITICS: tools/.tools/diacritics.py
+  PATH_TRANSLATE: tools/.tools/translate.py
 
   # ==================================================
   # CONFIG DIACRITICS (editable for cs)

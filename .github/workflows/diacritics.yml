@@ -10,17 +10,17 @@ env:
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
 
-  # PATH_DIACRITICS: .tools/diacritics.py
-  # PATH_TRANSLATE: .tools/translate.py
-  PATH_DIACRITICS: tools/.tools/diacritics.py
-  PATH_TRANSLATE: tools/.tools/translate.py
+  PATH_DIACRITICS: .tools/diacritics.py
+  PATH_TRANSLATE: .tools/translate.py
+  # PATH_DIACRITICS: tools/.tools/diacritics.py
+  # PATH_TRANSLATE: tools/.tools/translate.py
 
   # ==================================================
   # CONFIG DIACRITICS (editable for cs)
   # DIACRITICS_MESSAGE: empty or message
   # DIACRITICS_FILE: empty = all or (choose *md file)
   # ==================================================
-  IS_ENABLED_TRANSLATE: true
+  IS_ENABLED_TRANSLATE: false
 
   DIACRITICS_FILE: ""
   DIACRITICS_MESSAGE: "Added Czech diacritics"
@@ -79,11 +79,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      # - name: Checkout tools
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: PepikVaio/reMarkable_Github_Actions
+      #     path: tools
+
       - name: Checkout tools
         uses: actions/checkout@v4
         with:
           repository: PepikVaio/reMarkable_Github_Actions
-          path: tools
+          path: .
+
 
       - name: Setup Python
         uses: actions/setup-python@v5

@@ -1,0 +1,112 @@
+name: Restore Czech text and translate
+
+on:
+  push:
+    paths:
+      - "**/*.md"
+
+env:
+  # ======================================
+  # CONFIG DATA
+  # ======================================
+  DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
+  DIACRITICS_MODEL: czech-diacritics_generator
+
+  PATH_DIACRITICS: .tools/diacritics.py
+  PATH_TRANSLATE: .tools/translate.py
+
+  # ==================================================
+  # CONFIG DIACRITICS (editable for cs)
+  # DIACRITICS_MESSAGE: empty or message
+  # DIACRITICS_FILE: empty = all or (choose *md file)
+  # ==================================================
+  IS_ENABLED_TRANSLATE: true
+
+  DIACRITICS_FILE: ""
+  DIACRITICS_MESSAGE: "Added Czech diacritics"
+
+  # ===============================================================
+  # CONFIG TRANSLATION (editable)
+  #
+  # 1. For users whose main language is not English:
+  #    - Set your language as the source.
+  #    - English README.md will be generated automatically.
+  #
+  # TRANSLATE_SOURCE: .language/README.cs.md
+  # TRANSLATE_SOURCE_LANGUAGE: cs
+  #
+  # TRANSLATE_OUTPUT_MAIN: README.md
+  # TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
+  #
+  # TRANSLATE_OUTPUT_OTHER: .language
+  # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
+  #
+  # ===============================================================
+  # ===============================================================
+  #
+  # 2. For users whose main language is English:
+  #    - Use README.md as the source file.
+  #    - Only translations into other languages will be generated.
+  #
+  # TRANSLATE_SOURCE: README.md
+  # TRANSLATE_SOURCE_LANGUAGE: en
+  #
+  # TRANSLATE_OUTPUT_MAIN: ""
+  # TRANSLATE_OUTPUT_MAIN_LANGUAGE: ""
+  #
+  # TRANSLATE_OUTPUT_OTHER: .language
+  # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
+  # ===============================================================
+  TRANSLATE_SOURCE: .language/README.cs.md
+  TRANSLATE_SOURCE_LANGUAGE: cs
+  
+  TRANSLATE_OUTPUT_MAIN: README.md
+  TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
+  
+  TRANSLATE_OUTPUT_OTHER: .language
+  TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
+
+permissions:
+  contents: write
+
+jobs:
+  main:
+    name: 'Restore Czech text and translate'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install requests
+          if [ "${{ env.IS_ENABLED_TRANSLATE }}" = "true" ]; then
+            pip install transformers sentencepiece torch sacremoses
+          fi
+      - name: Add diacritics
+        if: env.TRANSLATE_SOURCE_LANGUAGE == 'cs'
+        run: |
+          python ${{ env.PATH_DIACRITICS }}
+      - name: Translate *md files
+        if: env.IS_ENABLED_TRANSLATE == 'true'
+        run: |
+          python ${{ env.PATH_TRANSLATE }}
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+
+          git commit -m "${{ env.DIACRITICS_MESSAGE }} [skip ci]"
+          git push

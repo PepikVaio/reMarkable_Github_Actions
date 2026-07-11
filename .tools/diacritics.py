@@ -3,7 +3,7 @@ import re
 import requests
 import subprocess
 from pathlib import Path
-from markdown_utils import protect_markdown, restore_markdown
+from markdown_utils import protect_text, restore_text
 
 # =========================
 # INPUTS (GitHub Action)
@@ -40,7 +40,7 @@ def restore_file(path: Path):
     print(f"I am repairing: {path}")
 
     text = path.read_text(encoding="utf-8")
-    original, protected = protect_markdown(text)
+    original, protected = protect_text(text)
 
     response = requests.post(
         API,
@@ -54,7 +54,7 @@ def restore_file(path: Path):
     response.raise_for_status()
 
     result = response.json()["result"]
-    result = restore_markdown(result, protected)
+    result = restore_text(result, protected)
 
     path.write_text(
         result,

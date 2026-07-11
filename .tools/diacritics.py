@@ -38,7 +38,7 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # ======================================================================================
 def restore_file(path: Path):
     print(" ")
-    print(f"I am repairing: {path}")
+    print(f"Processing: {path}")
 
     text = path.read_text(encoding="utf-8")
     original, protected = protect_text(text)
@@ -57,6 +57,16 @@ def restore_file(path: Path):
     result = response.json()["result"]
     result = restore_text(result, protected)
 
+    if text == result:
+        print("No changes detected")
+    else:
+        original_words = text.split()
+        result_words = result.split()
+
+        for old, new in zip(original_words, result_words):
+            if old != new:
+                print(f"Changes: {old} -> {new}")
+
     path.write_text(
         result,
         encoding="utf-8"
@@ -64,6 +74,11 @@ def restore_file(path: Path):
 
     print(f"Finished: {path}")
 
+
+
+
+
+    
 # =======================================================================================
 # GET FILES CHANGED IN CURRENT PUSH
 # Uses git history to find only files modified between previous and current commit.
@@ -126,3 +141,5 @@ for file in files:
     if file.is_file():
         restore_file(file)
 
+print(" ")
+print("Done")

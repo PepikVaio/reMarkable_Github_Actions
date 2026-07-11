@@ -24,7 +24,7 @@ env:
   # DIACRITICS_FILE: empty = all *md files or (choose *md file)
   # ============================================================
   IS_ENABLED_DIACRITICS: true
-  IS_ENABLED_TRANSLATE: false
+  IS_ENABLED_TRANSLATE: true
 
   DIACRITICS_FILE: ""
   DIACRITICS_MESSAGE: "Added Czech diacritics"

@@ -1,5 +1,14 @@
 import re
+import os
 
+# =========================
+# INPUTS (GitHub Action)
+# =========================
+CUSTOM_PROTECTED_WORDS = [
+    word.strip()
+    for word in os.environ.get("PROTECTED_WORDS", "").split(",")
+    if word.strip()
+]
 
 # ============================================================
 # COMMON MARKDOWN PROTECTION
@@ -22,20 +31,26 @@ def protect_text(text):
     protected = {}
     counter = 0
 
+    patterns = [
+        r"^>\s*\[!.*?\].*$",
+        r"^\[!\[.*?\]\(.*?\)\].*$",
+        r"\[[^\]]+\]\([^)]+\)",
+        r"!\[[^\]]*\]\([^)]+\)",
+        r"<[^>]+>",
+        r"`[^`]+`",
+        r"/[A-Za-z0-9_./-]+",
+        r"\.[A-Za-z0-9]+",
+    ]
+
+    for word in CUSTOM_PROTECTED_WORDS:
+        patterns.append(
+            rf"\b{re.escape(word)}\b"
+        )
+
     pattern = re.compile(
-        r"(?m)"
-        r"^>\s*\[!.*?\].*$"          # GitHub alerts
-        r"|^\[!\[.*?\]\(.*?\)\].*$"  # badges
-        r"|\[[^\]]+\]\([^)]+\)"      # Markdown links
-        r"|!\[[^\]]*\]\([^)]+\)"     # Markdown images
-        r"|<[^>]+>"                  # HTML tags
-        r"|`[^`]+`"                  # Inline code
-        r"|/[A-Za-z0-9_./-]+"        # Paths
-        r"|\.[A-Za-z0-9]+"           # File extensions
-        r"|\bXovi\b"
-        r"|\bQt\b"
-        r"|\bQML\b"
+        r"(?m)" + "|".join(patterns)
     )
+
 
     def replace(match):
 

@@ -15,9 +15,9 @@ env:
   # PATH_DIACRITICS: tools/.tools/diacritics.py
   # PATH_TRANSLATE: tools/.tools/translate.py
 
-  PATH_TOOLS: /tmp/rm_tools
-  PATH_DIACRITICS: /tmp/rm_tools/.tools/diacritics.py
-  PATH_TRANSLATE: /tmp/rm_tools/.tools/translate.py
+  PATH_TOOLS: /tmp
+  PATH_DIACRITICS: /tmp/.tools/diacritics.py
+  PATH_TRANSLATE: /tmp/.tools/translate.py
 
   # ==================================================
   # CONFIG DIACRITICS (editable for cs)

@@ -10,14 +10,9 @@ env:
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
 
-  # PATH_DIACRITICS: .tools/diacritics.py
-  # PATH_TRANSLATE: .tools/translate.py
-  # PATH_DIACRITICS: tools/.tools/diacritics.py
-  # PATH_TRANSLATE: tools/.tools/translate.py
-
-  PATH_TOOLS: /tmp
-  PATH_DIACRITICS: /tmp/.tools/diacritics.py
-  PATH_TRANSLATE: /tmp/.tools/translate.py
+  PATH_TOOLS: /tmp/tools
+  PATH_DIACRITICS: /tmp/tools/.tools/diacritics.py
+  PATH_TRANSLATE: /tmp/tools/.tools/translate.py
 
   # ==================================================
   # CONFIG DIACRITICS (editable for cs)
@@ -83,15 +78,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Checkout tools
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: PepikVaio/reMarkable_Github_Actions
-      #     path: tools
-
       - name: Checkout tools
-        run: |
-          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+        uses: actions/checkout@v4
+        with:
+          repository: PepikVaio/reMarkable_Github_Actions
+          path: ${{ env.PATH_TOOLS }}
+
+      # - name: Checkout tools
+      #   run: |
+      #     git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
 
 
       - name: Setup Python

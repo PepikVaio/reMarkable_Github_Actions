@@ -82,40 +82,52 @@ def load_model(model_name):
 def protect_text(text):
 
     protected = {}
-
-    patterns = [
-        r"`[^`]+`",
-        r"/[A-Za-z0-9_./-]+",
-        r"\.[a-zA-Z0-9]+",
-        r"\bXovi\b",
-        r"\bQt\b",
-        r"\bQML\b",
-    ]
-
     counter = 0
 
-    for pattern in patterns:
-        for match in re.findall(pattern, text):
+    pattern = re.compile(
+        r"(?m)"
+        r"^>\s*\[!.*?\].*$"          # GitHub alerts
+        r"|^\[!\[.*?\]\(.*?\)\].*$"  # badges
+        r"|\[[^\]]+\]\([^)]+\)"      # Markdown links
+        r"|!\[[^\]]*\]\([^)]+\)"     # Markdown images
+        r"|<[^>]+>"                  # HTML tags
+        r"|`[^`]+`"                  # Inline code
+        r"|/[A-Za-z0-9_./-]+"        # Paths
+        r"|\.[A-Za-z0-9]+"           # File extensions
+        r"|\bXovi\b"
+        r"|\bQt\b"
+        r"|\bQML\b"
+    )
 
-            key = f"PLACEHOLDER_{counter}"
+    def replace(match):
 
-            protected[key] = match
+        nonlocal counter
 
-            text = text.replace(
-                match,
-                key
-            )
+        key = f"PLACEHOLDER_{counter}"
 
-            counter += 1
+        protected[key] = match.group(0)
 
-    return text, protected
+        counter += 1
+
+        return key
+
+    result = pattern.sub(
+        replace,
+        text
+    )
+
+    return result, protected
 
 def restore_text(text, protected):
 
-    for key, value in protected.items():
+    for key in sorted(
+        protected.keys(),
+        key=len,
+        reverse=True
+    ):
         text = text.replace(
             key,
-            value
+            protected[key]
         )
 
     return text

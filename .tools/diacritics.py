@@ -12,23 +12,6 @@ API = os.environ["DIACRITICS_API"]
 DIACRITICS_FILE = os.environ.get("DIACRITICS_FILE", "").strip()
 MODEL = os.environ["DIACRITICS_MODEL"]
 
-# ===================================================================================================================
-# PROTECT MARKDOWN ELEMENTS
-# Temporarily replaces Markdown syntax elements with placeholders before sending text to the correction API.
-# This prevents the API from modifying links, badges, alerts, HTML tags, and other non-text parts of the document.
-# Placeholders are restored after correction to keep the original Markdown structure.
-#
-# (cs)
-# Dočasně nahradí prvky Markdownu zástupnými značkami před odesláním textu do API.
-# Zabrání tak úpravám odkazů, odznaků, upozornění, HTML tagů a dalších částí dokumentu, které nemají být opravovány.
-# Po dokončení opravy se zástupné značky obnoví zpět na původní obsah a zachová se původní struktura Markdownu.
-# ===================================================================================================================
-
-
-
-
-
-
 # ======================================================================================
 # ADD DIACRITICS IN FILE
 # Sends file content to Korektor API and replaces original content with corrected text.

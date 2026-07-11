@@ -178,28 +178,14 @@ text = SOURCE_FILE.read_text(
 )
 
 print()
-print("*" * 60)
-print(f"Working on: {SOURCE_FILE}")
-print("*" * 60)
-print()
-
+print(f"***** Working on {SOURCE_FILE} *****")
 
 if MAIN_OUTPUT and MAIN_MODEL:
 
-    print(
-        f"Translation: {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}"
-    )
-    print()
+    print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
 
-    tokenizer, model = load_model(
-        MAIN_MODEL
-    )
-
-    translated = translate_markdown(
-        text,
-        tokenizer,
-        model
-    )
+    tokenizer, model = load_model(MAIN_MODEL)
+    translated = translate_markdown(text, tokenizer, model)
 
     MAIN_OUTPUT.write_text(
         translated,
@@ -208,32 +194,17 @@ if MAIN_OUTPUT and MAIN_MODEL:
 
     text = translated
 
-    print(
-        f"Finished: {MAIN_OUTPUT}"
-    )
-    print()
-
+    print(f"***** Finished *****")
 
 # Other translations
 for language, model_name in OTHER_MODELS.items():
 
     print()
-    print("*" * 60)
-    print(f"Working on: {SOURCE_FILE}")
-    print(f"Translation: {SOURCE_LANGUAGE} → {language}")
-    print("*" * 60)
-    print()
+    print(f"***** Working on: {SOURCE_FILE} *****")
+    print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
 
-    tokenizer, model = load_model(
-        model_name
-    )
-
-    translated = translate_markdown(
-        text,
-        tokenizer,
-        model
-    )
-
+    tokenizer, model = load_model(model_name)
+    translated = translate_markdown(text, tokenizer, model)
     output_file = OTHER_OUTPUT_PATH / f"README.{language}.md"
 
     output_file.write_text(
@@ -241,12 +212,7 @@ for language, model_name in OTHER_MODELS.items():
         encoding="utf-8"
     )
 
-    print(
-        f"Finished: {output_file}"
-    )
-    print()
+    print(f"***** Finished: {output_file} *****")
 
-
-print("*" * 60)
-print("ALL TRANSLATIONS FINISHED")
-print("*" * 60)
+print()
+print("Done")

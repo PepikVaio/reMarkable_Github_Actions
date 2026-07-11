@@ -51,10 +51,7 @@ def restore_file(path: Path):
             if old != new:
                 print(f"Changes: {old} -> {new}", flush=True)
 
-    path.write_text(
-        result,
-        encoding="utf-8"
-    )
+    path.write_text(result, encoding="utf-8")
 
     print(f"***** Finished *****")
 
@@ -103,19 +100,9 @@ if DIACRITICS_FILE:
     files = [
         Path(DIACRITICS_FILE)
     ] if Path(DIACRITICS_FILE) in changed_files else []
-
 else:
-
-    # source_directory = Path(os.environ["PATH_SOURCE"])
-
-    # files = [
-    #     file
-    #     for file in source_directory.glob("*.md")
-    #     if file in changed_files
-    # ]
-
-    source_language = os.environ["SOURCE_LANGUAGE"]
-    language_directory = Path(os.environ["LANGUAGE_DIRECTORY"])
+    source_language = os.environ["LANGUAGE_SOURCE"]
+    language_directory = Path(os.environ["PATH_LANGUAGE_OTHER"])
 
     if source_language == "en":
         source_directory = Path(".")
@@ -130,9 +117,6 @@ else:
         for file in source_directory.glob("*.md")
         if file in changed_files
     ]
-
-
-
 
 if not files:
     print(" ")

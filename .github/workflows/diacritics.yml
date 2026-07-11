@@ -21,7 +21,7 @@ env:
   # PATH_DIACRITICS: .github/.tools/tools/diacritics.py
   # PATH_TRANSLATE: .github/.tools/tools/translate.py
 
-  PATH_TOOLS: /tmp
+  PATH_TOOLS: /tmp/.tools
   PATH_DIACRITICS: /tmp/.tools/diacritics.py
   PATH_TRANSLATE: /tmp/.tools/translate.py
 
@@ -91,8 +91,10 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout tools
-        run: |
-          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+        uses: actions/checkout@v4
+        with:
+          repository: PepikVaio/reMarkable_Github_Actions
+          path: ${{ env.PATH_TOOLS }}
 
 
 

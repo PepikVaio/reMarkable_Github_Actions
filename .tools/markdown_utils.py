@@ -41,7 +41,7 @@ def protect_text(text):
 
         nonlocal counter
 
-        key = f"{{PLACEHOLDER_{counter}}}"
+        key = f"rM_{counter}"
 
         protected[key] = match.group(0)
 

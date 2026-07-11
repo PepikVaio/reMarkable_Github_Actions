@@ -59,10 +59,9 @@ OTHER_MODELS = {
 }
 
 if not SOURCE_FILE.exists():
-    print(f"No file: {SOURCE_FILE}")
+    print(f"Info: No file {SOURCE_FILE}")
     exit(0)
 
-print(f"Translating: {SOURCE_FILE}")
 
 def load_model(model_name):
 
@@ -123,15 +122,62 @@ def translate_text(text, tokenizer, model):
 # Bloky kódu se přeskočí, nadpisy zachovají své značky a prázdné řádky zůstanou.
 # ==============================================================================================
 
+# def translate_markdown(text, tokenizer, model):
+
+#     protected_text, protected = protect_text(text)
+#     result = []
+
+#     in_code = False
+
+#     for line in protected_text.splitlines():
+
+#         if line.startswith("```"):
+#             in_code = not in_code
+#             result.append(line)
+#             continue
+
+#         if in_code:
+#             result.append(line)
+#             continue
+
+#         if line.startswith("#"):
+#             prefix = re.match(r"^#+\s*", line).group()
+#             content = line[len(prefix):]
+
+#             result.append(
+#                 prefix + translate_text(content, tokenizer, model)
+#             )
+#             continue
+
+#         if not line.strip():
+#             result.append(line)
+#             continue
+
+#         result.append(
+#             translate_text(line, tokenizer, model)
+#         )
+
+
+#     translated = "\n".join(result)
+
+#     return restore_text(
+#         translated,
+#         protected
+#     )
+
+
+
+
 def translate_markdown(text, tokenizer, model):
 
     protected_text, protected = protect_text(text)
-
     result = []
+    lines = protected_text.splitlines()
+    total = len(lines)
 
     in_code = False
 
-    for line in protected_text.splitlines():
+    for index, line in enumerate(lines, start=1):
 
         if line.startswith("```"):
             in_code = not in_code
@@ -159,6 +205,9 @@ def translate_markdown(text, tokenizer, model):
             translate_text(line, tokenizer, model)
         )
 
+        if index % 10 == 0 or index == total:
+            print(f"Progress: {index}/{total} lines")
+
 
     translated = "\n".join(result)
 
@@ -166,6 +215,9 @@ def translate_markdown(text, tokenizer, model):
         translated,
         protected
     )
+
+
+
 # =============================================================================================================
 # READ SOURCE FILE AND WRITE TRANSLATED OUTPUT
 # Reads the source Markdown file, translates its content, and saves the translated version to the output file.
@@ -177,7 +229,7 @@ text = SOURCE_FILE.read_text(
     encoding="utf-8"
 )
 
-print()
+print(" ")
 print(f"***** Working on {SOURCE_FILE} *****")
 
 if MAIN_OUTPUT and MAIN_MODEL:
@@ -199,7 +251,7 @@ if MAIN_OUTPUT and MAIN_MODEL:
 # Other translations
 for language, model_name in OTHER_MODELS.items():
 
-    print()
+    print(" ")
     print(f"***** Working on: {SOURCE_FILE} *****")
     print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
 
@@ -214,5 +266,5 @@ for language, model_name in OTHER_MODELS.items():
 
     print(f"***** Finished: {output_file} *****")
 
-print()
+print(" ")
 print("Done")

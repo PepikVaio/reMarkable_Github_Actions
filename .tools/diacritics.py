@@ -37,13 +37,13 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # Odešle obsah souboru do Korektor API a nahradí původní obsah opraveným textem.
 # ======================================================================================
 def restore_file(path: Path):
-    print(f"***** Working on {path} *****", flush=True)
+    print(f"***** Working on {path} *****")
 
     text = path.read_text(encoding="utf-8")
     original, protected = protect_text(text)
 
-    print(f"Info: Language correction only for {path}", flush=True)
-    print(f"Info: Protected elements {len(protected)}", flush=True)
+    print(f"Caution: Language correction only for {path}")
+    print(f"Info: Protected elements {len(protected)}")
 
     response = requests.post(
         API,
@@ -60,7 +60,7 @@ def restore_file(path: Path):
     result = restore_text(result, protected)
 
     if text == result:
-        print("Info: No changes required", flush=True)
+        print("Info: No changes required")
     else:
         original_words = text.split()
         result_words = result.split()
@@ -74,7 +74,7 @@ def restore_file(path: Path):
         encoding="utf-8"
     )
 
-    print(f"***** Finished *****", flush=True)
+    print(f"***** Finished *****")
 
 # =======================================================================================
 # GET FILES CHANGED IN CURRENT PUSH

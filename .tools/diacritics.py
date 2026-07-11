@@ -106,11 +106,19 @@ if DIACRITICS_FILE:
     ] if Path(DIACRITICS_FILE) in changed_files else []
 
 else:
-    source_file = Path(os.environ["TRANSLATE_SOURCE"])
+    # source_file = Path(os.environ["TRANSLATE_SOURCE"])
+
+    # files = [
+    #     source_file
+    # ] if source_file in changed_files else []
+
+    source_directory = Path(os.environ["TRANSLATE_SOURCE"])
 
     files = [
-        source_file
-    ] if source_file in changed_files else []
+        file
+        for file in source_directory.glob("*.cs.md")
+        if file in changed_files
+    ]
 
 if not files:
     print(" ")

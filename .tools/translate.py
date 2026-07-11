@@ -2,6 +2,7 @@ import os
 import re
 from pathlib import Path
 from transformers import MarianMTModel, MarianTokenizer
+from markdown_utils import protect_markdown, restore_markdown
 
 # =========================
 # INPUTS (GitHub Action)
@@ -79,58 +80,16 @@ def load_model(model_name):
 # Dočasně nahradí technické prvky zástupnými značkami před překladem.
 # Zabrání překladači upravovat kód, cesty, přípony a názvy projektů.
 # ===================================================================================================
-def protect_text(text):
 
-    protected = {}
-    counter = 0
 
-    pattern = re.compile(
-        r"(?m)"
-        r"^>\s*\[!.*?\].*$"          # GitHub alerts
-        r"|^\[!\[.*?\]\(.*?\)\].*$"  # badges
-        r"|\[[^\]]+\]\([^)]+\)"      # Markdown links
-        r"|!\[[^\]]*\]\([^)]+\)"     # Markdown images
-        r"|<[^>]+>"                  # HTML tags
-        r"|`[^`]+`"                  # Inline code
-        r"|/[A-Za-z0-9_./-]+"        # Paths
-        r"|\.[A-Za-z0-9]+"           # File extensions
-        r"|\bXovi\b"
-        r"|\bQt\b"
-        r"|\bQML\b"
-    )
+TRANSLATE_PATTERNS = [
+    r"/[A-Za-z0-9_./-]+",   # paths
+    r"\.[A-Za-z0-9]+",      # file extensions
+    r"\bXovi\b",
+    r"\bQt\b",
+    r"\bQML\b",
+]
 
-    def replace(match):
-
-        nonlocal counter
-
-        key = f"MARKDOWN_PLACEHOLDER_{counter}"
-
-        protected[key] = match.group(0)
-
-        counter += 1
-
-        return key
-
-    result = pattern.sub(
-        replace,
-        text
-    )
-
-    return result, protected
-
-def restore_text(text, protected):
-
-    for key in sorted(
-        protected.keys(),
-        key=len,
-        reverse=True
-    ):
-        text = text.replace(
-            key,
-            protected[key]
-        )
-
-    return text
 
 # ===========================================================================
 # TRANSLATE TEXT
@@ -144,7 +103,10 @@ def translate_text(text, tokenizer, model):
     if not text.strip():
         return text
     
-    original, protected = protect_text(text)
+    original, protected = protect_markdown(
+        text,
+        TRANSLATE_PATTERNS
+    )    
 
     inputs = tokenizer(
         original,
@@ -164,7 +126,7 @@ def translate_text(text, tokenizer, model):
         skip_special_tokens=True
     )
 
-    return restore_text(result, protected)
+    return restore_markdown(result, protected)
 
 # ==============================================================================================
 # TRANSLATE MARKDOWN DOCUMENT

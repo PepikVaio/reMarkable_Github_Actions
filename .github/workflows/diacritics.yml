@@ -65,7 +65,7 @@ env:
   TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
   
   TRANSLATE_OUTPUT_OTHER: .language
-  TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de"
+  TRANSLATE_OUTPUT_OTHER_LANGUAGE: "it"
 
 permissions:
   contents: write

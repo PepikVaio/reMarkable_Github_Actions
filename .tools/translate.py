@@ -1,4 +1,5 @@
 import os
+os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 import re
 from pathlib import Path
 from transformers import MarianMTModel, MarianTokenizer
@@ -59,9 +60,11 @@ OTHER_MODELS = {
 }
 
 if not SOURCE_FILE.exists():
+    print(" ")
     print(f"No file: {SOURCE_FILE}")
     exit(0)
 
+print(" ")
 print(f"Translating: {SOURCE_FILE}")
 
 def load_model(model_name):
@@ -90,28 +93,83 @@ def load_model(model_name):
 # (cs)
 # Přeloží jeden blok textu a zachová chráněné prvky beze změny.
 # ===========================================================================
+# def translate_text(text, tokenizer, model):
+
+#     if not text.strip():
+#         return text
+
+#     inputs = tokenizer(
+#         text,
+#         return_tensors="pt",
+#         truncation=True,
+#         max_length=512
+#     )
+
+#     translated = model.generate(
+#         **inputs,
+#         max_length=512,
+#         num_beams=4
+#     )
+
+#     return tokenizer.decode(
+#         translated[0],
+#         skip_special_tokens=True
+#     )
+
 def translate_text(text, tokenizer, model):
 
-    if not text.strip():
-        return text
+    lines = text.splitlines()
+    total = len(lines)
 
-    inputs = tokenizer(
-        text,
-        return_tensors="pt",
-        truncation=True,
-        max_length=512
-    )
+    print()
+    print("=" * 40)
+    print(f"Translating {total} lines")
+    print("=" * 40)
 
-    translated = model.generate(
-        **inputs,
-        max_length=512,
-        num_beams=4
-    )
+    result = []
 
-    return tokenizer.decode(
-        translated[0],
-        skip_special_tokens=True
-    )
+    in_code = False
+
+    for index, line in enumerate(lines, start=1):
+
+        if line.startswith("```"):
+            in_code = not in_code
+            result.append(line)
+            continue
+
+        if in_code:
+            result.append(line)
+            continue
+
+        if not line.strip():
+            result.append(line)
+            continue
+
+
+        translated = translate_text(
+            line,
+            tokenizer,
+            model
+        )
+
+
+        print(f"\n[{index}/{total}]")
+        print(f"IN : {line[:120]}")
+        print(f"OUT: {translated[:120]}")
+
+
+        result.append(translated)
+
+
+    print()
+    print("=" * 40)
+    print("Translation block finished")
+    print("=" * 40)
+
+    return "\n".join(result)
+
+
+
 
 # ==============================================================================================
 # TRANSLATE MARKDOWN DOCUMENT
@@ -188,7 +246,7 @@ if MAIN_OUTPUT and MAIN_MODEL:
 
     text = translated
 
-    print(f"Done: {MAIN_OUTPUT}")
+    print(f"Finished: {MAIN_OUTPUT}")
 
 # Other translations
 for language, model_name in OTHER_MODELS.items():
@@ -202,4 +260,5 @@ for language, model_name in OTHER_MODELS.items():
         encoding="utf-8"
     )
 
+    print(" ")
     print(f"Done: {output_file}")

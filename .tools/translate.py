@@ -55,6 +55,7 @@ OTHER_MODELS = {
 if not SOURCE_FILES:
     print(" ")
     print("Info: No files to translate")
+    print("Done")
     exit(0)
 
 def load_model(model_name):

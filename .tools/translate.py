@@ -1,7 +1,9 @@
 import os
 import re
-from pathlib import Path
+
 os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+
+from pathlib import Path
 from transformers import MarianMTModel, MarianTokenizer
 from markdown_utils import protect_text, restore_text
 
@@ -71,18 +73,6 @@ def load_model(model_name):
 
     return tokenizer, model
 
-# ===================================================================================================
-# PROTECT TECHNICAL TEXT
-# Temporarily replaces technical elements with placeholders before translation.
-# Prevents the translation model from modifying code, paths, extensions, and project specific names.
-#
-# (cs)
-# Dočasně nahradí technické prvky zástupnými značkami před překladem.
-# Zabrání překladači upravovat kód, cesty, přípony a názvy projektů.
-# ===================================================================================================
-
-
-
 # ===========================================================================
 # TRANSLATE TEXT
 # Translates a single text block while keeping protected elements unchanged.
@@ -122,7 +112,6 @@ def translate_text(text, tokenizer, model):
 # Zpracuje Markdown dokument řádek po řádku při zachování formátování Markdownu.
 # Bloky kódu se přeskočí, nadpisy zachovají své značky a prázdné řádky zůstanou.
 # ==============================================================================================
-
 def translate_markdown(text, tokenizer, model):
 
     protected_text, protected = protect_text(text)
@@ -170,8 +159,6 @@ def translate_markdown(text, tokenizer, model):
         protected
     )
 
-
-
 # =============================================================================================================
 # READ SOURCE FILE AND WRITE TRANSLATED OUTPUT
 # Reads the source Markdown file, translates its content, and saves the translated version to the output file.
@@ -188,7 +175,7 @@ print(f"***** Working on {SOURCE_FILE} *****")
 
 if MAIN_OUTPUT and MAIN_MODEL:
 
-    print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}", flush=True)
+    print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
 
     tokenizer, model = load_model(MAIN_MODEL)
     translated = translate_markdown(text, tokenizer, model)
@@ -205,9 +192,9 @@ if MAIN_OUTPUT and MAIN_MODEL:
 # Other translations
 for language, model_name in OTHER_MODELS.items():
 
-    print(" ", flush=True)
+    print(" ")
     print(f"***** Working on: {SOURCE_FILE} *****")
-    print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}", flush=True)
+    print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
 
     tokenizer, model = load_model(model_name)
     translated = translate_markdown(text, tokenizer, model)

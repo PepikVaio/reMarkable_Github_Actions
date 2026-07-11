@@ -2,7 +2,7 @@ import os
 import re
 from pathlib import Path
 from transformers import MarianMTModel, MarianTokenizer
-from markdown_utils import protect_markdown, restore_markdown
+from markdown_utils import protect_text, restore_text
 
 # =========================
 # INPUTS (GitHub Action)
@@ -103,7 +103,7 @@ def translate_text(text, tokenizer, model):
     if not text.strip():
         return text
     
-    original, protected = protect_markdown(
+    original, protected = protect_text(
         text,
         TRANSLATE_PATTERNS
     )    
@@ -126,7 +126,7 @@ def translate_text(text, tokenizer, model):
         skip_special_tokens=True
     )
 
-    return restore_markdown(result, protected)
+    return restore_text(result, protected)
 
 # ==============================================================================================
 # TRANSLATE MARKDOWN DOCUMENT

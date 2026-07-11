@@ -1,5 +1,4 @@
 import os
-os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 import re
 from pathlib import Path
 from transformers import MarianMTModel, MarianTokenizer
@@ -60,11 +59,9 @@ OTHER_MODELS = {
 }
 
 if not SOURCE_FILE.exists():
-    print(" ")
     print(f"No file: {SOURCE_FILE}")
     exit(0)
 
-print(" ")
 print(f"Translating: {SOURCE_FILE}")
 
 def load_model(model_name):
@@ -93,83 +90,28 @@ def load_model(model_name):
 # (cs)
 # Přeloží jeden blok textu a zachová chráněné prvky beze změny.
 # ===========================================================================
-# def translate_text(text, tokenizer, model):
-
-#     if not text.strip():
-#         return text
-
-#     inputs = tokenizer(
-#         text,
-#         return_tensors="pt",
-#         truncation=True,
-#         max_length=512
-#     )
-
-#     translated = model.generate(
-#         **inputs,
-#         max_length=512,
-#         num_beams=4
-#     )
-
-#     return tokenizer.decode(
-#         translated[0],
-#         skip_special_tokens=True
-#     )
-
 def translate_text(text, tokenizer, model):
 
-    lines = text.splitlines()
-    total = len(lines)
+    if not text.strip():
+        return text
 
-    print()
-    print("=" * 40)
-    print(f"Translating {total} lines")
-    print("=" * 40)
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512
+    )
 
-    result = []
+    translated = model.generate(
+        **inputs,
+        max_length=512,
+        num_beams=4
+    )
 
-    in_code = False
-
-    for index, line in enumerate(lines, start=1):
-
-        if line.startswith("```"):
-            in_code = not in_code
-            result.append(line)
-            continue
-
-        if in_code:
-            result.append(line)
-            continue
-
-        if not line.strip():
-            result.append(line)
-            continue
-
-
-        translated = translate_text(
-            line,
-            tokenizer,
-            model
-        )
-
-
-        print(f"\n[{index}/{total}]")
-        print(f"IN : {line[:120]}")
-        print(f"OUT: {translated[:120]}")
-
-
-        result.append(translated)
-
-
-    print()
-    print("=" * 40)
-    print("Translation block finished")
-    print("=" * 40)
-
-    return "\n".join(result)
-
-
-
+    return tokenizer.decode(
+        translated[0],
+        skip_special_tokens=True
+    )
 
 # ==============================================================================================
 # TRANSLATE MARKDOWN DOCUMENT
@@ -235,9 +177,29 @@ text = SOURCE_FILE.read_text(
     encoding="utf-8"
 )
 
+print()
+print("*" * 60)
+print(f"Working on: {SOURCE_FILE}")
+print("*" * 60)
+print()
+
+
 if MAIN_OUTPUT and MAIN_MODEL:
-    tokenizer, model = load_model(MAIN_MODEL)
-    translated = translate_markdown(text, tokenizer, model)
+
+    print(
+        f"Translation: {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}"
+    )
+    print()
+
+    tokenizer, model = load_model(
+        MAIN_MODEL
+    )
+
+    translated = translate_markdown(
+        text,
+        tokenizer,
+        model
+    )
 
     MAIN_OUTPUT.write_text(
         translated,
@@ -246,13 +208,32 @@ if MAIN_OUTPUT and MAIN_MODEL:
 
     text = translated
 
-    print(f"Finished: {MAIN_OUTPUT}")
+    print(
+        f"Finished: {MAIN_OUTPUT}"
+    )
+    print()
+
 
 # Other translations
 for language, model_name in OTHER_MODELS.items():
 
-    tokenizer, model = load_model(model_name)
-    translated = translate_markdown(text, tokenizer, model)
+    print()
+    print("*" * 60)
+    print(f"Working on: {SOURCE_FILE}")
+    print(f"Translation: {SOURCE_LANGUAGE} → {language}")
+    print("*" * 60)
+    print()
+
+    tokenizer, model = load_model(
+        model_name
+    )
+
+    translated = translate_markdown(
+        text,
+        tokenizer,
+        model
+    )
+
     output_file = OTHER_OUTPUT_PATH / f"README.{language}.md"
 
     output_file.write_text(
@@ -260,5 +241,12 @@ for language, model_name in OTHER_MODELS.items():
         encoding="utf-8"
     )
 
-    print(" ")
-    print(f"Done: {output_file}")
+    print(
+        f"Finished: {output_file}"
+    )
+    print()
+
+
+print("*" * 60)
+print("ALL TRANSLATIONS FINISHED")
+print("*" * 60)

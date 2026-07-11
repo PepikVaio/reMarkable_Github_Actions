@@ -40,12 +40,12 @@ env:
   #    - Set your language as the source.
   #    - English README.md will be generated automatically.
   #
-  # TRANSLATE_SOURCE: .language/README.cs.md
+  # TRANSLATE_SOURCE: .language/cs
   # TRANSLATE_SOURCE_LANGUAGE: cs
-  #
-  # TRANSLATE_OUTPUT_MAIN: README.md
+  
+  # TRANSLATE_OUTPUT_MAIN: .
   # TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
-  #
+  
   # TRANSLATE_OUTPUT_OTHER: .language
   # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
   #
@@ -56,24 +56,23 @@ env:
   #    - Use README.md as the source file.
   #    - Only translations into other languages will be generated.
   #
-  # TRANSLATE_SOURCE: README.md
+  # TRANSLATE_SOURCE: .
   # TRANSLATE_SOURCE_LANGUAGE: en
-  #
+  
   # TRANSLATE_OUTPUT_MAIN: ""
   # TRANSLATE_OUTPUT_MAIN_LANGUAGE: ""
-  #
-  # TRANSLATE_OUTPUT_OTHER: .language
-  # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
-  # ===============================================================
-  # TRANSLATE_SOURCE: .language/README.cs.md
-  TRANSLATE_SOURCE: .language/cs
-  TRANSLATE_SOURCE_LANGUAGE: cs
   
-  TRANSLATE_OUTPUT_MAIN: .
-  TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
+  # TRANSLATE_OUTPUT_OTHER: .language
+  # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
+  # ===============================================================
+  TRANSLATE_SOURCE: .
+  TRANSLATE_SOURCE_LANGUAGE: en
+  
+  TRANSLATE_OUTPUT_MAIN: ""
+  TRANSLATE_OUTPUT_MAIN_LANGUAGE: ""
   
   TRANSLATE_OUTPUT_OTHER: .language
-  TRANSLATE_OUTPUT_OTHER_LANGUAGE: "it"
+  TRANSLATE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
 
 permissions:
   contents: write

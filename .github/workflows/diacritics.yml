@@ -4,9 +4,11 @@ on:
   workflow_call:
 
 env:
-  # ======================================
+  # ===============================================================================
   # CONFIG DATA
-  # ======================================
+  #
+  # PROTECTED_WORDS: Words that should never be changed by translation/correction.
+  # ===============================================================================
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
 
@@ -15,6 +17,8 @@ env:
   PATH_TOOLS: /tmp/tools
   PATH_DIACRITICS: /tmp/tools/.tools/diacritics.py
   PATH_TRANSLATE: /tmp/tools/.tools/translate.py
+
+  PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
 
   # ============================================================
   # CONFIG DIACRITICS (editable)

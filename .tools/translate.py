@@ -183,8 +183,8 @@ text = SOURCE_FILE.read_text(
     encoding="utf-8"
 )
 
-print(" ", flush=True)
-print(f"***** Working on {SOURCE_FILE} *****", flush=True)
+print(" ")
+print(f"***** Working on {SOURCE_FILE} *****")
 
 if MAIN_OUTPUT and MAIN_MODEL:
 
@@ -200,13 +200,13 @@ if MAIN_OUTPUT and MAIN_MODEL:
 
     text = translated
 
-    print(f"***** Finished *****", flush=True)
+    print(f"***** Finished *****")
 
 # Other translations
 for language, model_name in OTHER_MODELS.items():
 
     print(" ", flush=True)
-    print(f"***** Working on: {SOURCE_FILE} *****", flush=True)
+    print(f"***** Working on: {SOURCE_FILE} *****")
     print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}", flush=True)
 
     tokenizer, model = load_model(model_name)
@@ -218,7 +218,7 @@ for language, model_name in OTHER_MODELS.items():
         encoding="utf-8"
     )
 
-    print(f"***** Finished: *****", flush=True)
+    print(f"***** Finished: *****")
 
 print(" ")
 print("Done")

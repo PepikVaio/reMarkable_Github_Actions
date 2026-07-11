@@ -173,12 +173,12 @@ def translate_markdown(text, tokenizer, model):
 # (cs)
 # Načte zdrojový Markdown soubor, přeloží jeho obsah a uloží přeloženou verzi do výstupního souboru.
 # =============================================================================================================
-text = SOURCE_FILE.read_text(
-    encoding="utf-8"
-)
+# text = SOURCE_FILE.read_text(
+#     encoding="utf-8"
+# )
 
-print(" ")
-print(f"***** Working on {SOURCE_FILE} *****")
+# print(" ")
+# print(f"***** Working on {SOURCE_FILE} *****")
 
 # if MAIN_OUTPUT and MAIN_MODEL:
 

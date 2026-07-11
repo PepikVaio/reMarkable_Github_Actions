@@ -16,11 +16,14 @@ env:
   PATH_DIACRITICS: /tmp/tools/.tools/diacritics.py
   PATH_TRANSLATE: /tmp/tools/.tools/translate.py
 
-  # ==================================================
-  # CONFIG DIACRITICS (editable for cs)
+  # ============================================================
+  # CONFIG DIACRITICS (editable)
+  #
+  # IS_ENABLED_DIACRITICS: only for cs
   # DIACRITICS_MESSAGE: empty or message
-  # DIACRITICS_FILE: empty = all or (choose *md file)
-  # ==================================================
+  # DIACRITICS_FILE: empty = all *md files or (choose *md file)
+  # ============================================================
+  IS_ENABLED_DIACRITICS: true
   IS_ENABLED_TRANSLATE: true
 
   DIACRITICS_FILE: ""
@@ -99,7 +102,7 @@ jobs:
           fi
 
       - name: Add diacritics
-        if: env.TRANSLATE_SOURCE_LANGUAGE == 'cs'
+        if: env.IS_ENABLED_DIACRITICS == 'true' && env.TRANSLATE_SOURCE_LANGUAGE == 'cs'
         run: |
           python ${{ env.PATH_DIACRITICS }}
 

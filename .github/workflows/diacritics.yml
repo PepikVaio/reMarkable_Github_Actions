@@ -4,11 +4,9 @@ on:
   workflow_call:
 
 env:
-  # ===============================================================================
+  # ==============================
   # CONFIG DATA
-  #
-  # PROTECTED_WORDS: Words that should never be changed by translation/correction.
-  # ===============================================================================
+  # ==============================
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
 
@@ -18,95 +16,60 @@ env:
   PATH_DIACRITICS: /tmp/tools/.tools/diacritics.py
   PATH_TRANSLATE: /tmp/tools/.tools/translate.py
 
+  # ===============================================================
+  # CONFIG (editable)
+  #
+  # COMMIT_MESSAGE: empty or choose message
+  #
+  # PROTECTED_WORDS:
+  #   Words that should never be changed by translation/correction
+  # ===============================================================
+  COMMIT_MESSAGE: "Updated documentation translations"
   PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
 
-  # =================================================================
+  # ======================================
   # CONFIG DIACRITICS (editable)
   #
   # IS_ENABLED_DIACRITICS: only for cs
-  # COMMIT_MESSAGE: empty or message
-  # DIACRITICS_FILE: empty = all Markdown files or (choose *md file)
-  # =================================================================
+  #
+  # DIACRITICS_FILE:
+  #   empty = all Markdown files
+  #   file  = only selected Markdown file
+  # ======================================
   IS_ENABLED_DIACRITICS: true
-  IS_ENABLED_TRANSLATE: true
 
   DIACRITICS_FILE: ""
-  COMMIT_MESSAGE: "Updated documentation translations"
   
-  # ===============================================================
+  # ======================================================
   # CONFIG TRANSLATION (editable)
   #
-  # 1. For users whose main language is not English:
-  #    - Set your language as the source.
-  #    - English README.md will be generated automatically.
+  # LANGUAGE_SOURCE:
+  #   Language of the original Markdown files
   #
-  # PATH_SOURCE: .language/cs
-  # PATH_SOURCE_LANGUAGE: cs
-  
-  # PATH_OUTPUT_MAIN: .
-  # PATH_OUTPUT_MAIN_LANGUAGE: en
-  
-  # PATHE_OUTPUT_OTHER: .language
-  # PATHE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
-  #
-  # ===============================================================
-  # ===============================================================
-  #
-  # 2. For users whose main language is English:
-  #    - Use README.md as the source file.
-  #    - Only translations into other languages will be generated.
-  #
-  # PATH_SOURCE: .
-  # PATH_SOURCE_LANGUAGE: en
-  
-  # PATH_OUTPUT_MAIN: ""
-  # PATH_OUTPUT_MAIN_LANGUAGE: ""
-  
-  # PATHE_OUTPUT_OTHER: .language
-  # PATHE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
-  # ===============================================================
-
-  # PATH_SOURCE: .
-  # PATH_SOURCE_LANGUAGE: en
-  
-  # PATH_OUTPUT_MAIN: ""
-  # PATH_OUTPUT_MAIN_LANGUAGE: ""
-  
-  # PATHE_OUTPUT_OTHER: .language
-  # PATHE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
-
-
-
-
-
-  # ===============================================================
-  # CONFIG TRANSLATION (editable)
-  #
-  # SOURCE_LANGUAGE:
-  #   Language of the original Markdown files.
-  #
-  # If SOURCE_LANGUAGE is "en":
-  #   Source files are read from repository root.
+  # If LANGUAGE_SOURCE is "en":
+  #   Source files are read from repository root
   #   Other languages are stored in .language/<language>/
   #
-  # If SOURCE_LANGUAGE is not "en":
-  #   Source files are read from .language/<language>/.
-  #   English translation is stored in repository root.
+  # If LANGUAGE_SOURCE is not "en":
+  #   Source files are read from .language/<language>/
+  #   English translation is stored in repository root
   #
-  # TRANSLATE_LANGUAGES:
-  #   Languages that should be generated.
+  # LANGUAGE_TRANSLATE:
+  #   Languages that should be generated
   #
-  # LANGUAGE_DIRECTORY:
-  #   Directory for translated languages.
+  # PATH_LANGUAGE_OTHER:
+  #   Directory for translated languages
   #
-  # ===============================================================
+  # TRANSLATE_FILE:
+  #   empty = all Markdown files
+  #   file = only selected Markdown file
+  # ======================================================
+  IS_ENABLED_TRANSLATE: true
 
-  SOURCE_LANGUAGE: cs
-
-  TRANSLATE_LANGUAGES: "en, de"
-
-  LANGUAGE_DIRECTORY: .language
-
+  LANGUAGE_SOURCE: cs
+  LANGUAGE_TRANSLATE: "en, de"
+  PATH_LANGUAGE_OTHER: .languages
+  TRANSLATE_FILE: ""
 
 permissions:
   contents: write
@@ -140,8 +103,7 @@ jobs:
           fi
 
       - name: Add diacritics
-        # if: env.IS_ENABLED_DIACRITICS == 'true' && env.PATH_SOURCE_LANGUAGE == 'cs'
-        if: env.IS_ENABLED_DIACRITICS == 'true' && env.SOURCE_LANGUAGE == 'cs'
+        if: env.IS_ENABLED_DIACRITICS == 'true' && env.LANGUAGE_SOURCE == 'cs'
         run: |
           python ${{ env.PATH_DIACRITICS }}
 

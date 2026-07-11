@@ -102,11 +102,9 @@ def translate_text(text, tokenizer, model):
 
     if not text.strip():
         return text
-    
-    original, protected = protect_text(text)    
 
     inputs = tokenizer(
-        original,
+        text,
         return_tensors="pt",
         truncation=True,
         max_length=512
@@ -118,12 +116,10 @@ def translate_text(text, tokenizer, model):
         num_beams=4
     )
 
-    result = tokenizer.decode(
+    return tokenizer.decode(
         translated[0],
         skip_special_tokens=True
     )
-
-    return restore_text(result, protected)
 
 # ==============================================================================================
 # TRANSLATE MARKDOWN DOCUMENT
@@ -134,13 +130,16 @@ def translate_text(text, tokenizer, model):
 # Zpracuje Markdown dokument řádek po řádku při zachování formátování Markdownu.
 # Bloky kódu se přeskočí, nadpisy zachovají své značky a prázdné řádky zůstanou.
 # ==============================================================================================
+
 def translate_markdown(text, tokenizer, model):
+
+    protected_text, protected = protect_text(text)
 
     result = []
 
     in_code = False
 
-    for line in text.splitlines():
+    for line in protected_text.splitlines():
 
         if line.startswith("```"):
             in_code = not in_code
@@ -168,7 +167,12 @@ def translate_markdown(text, tokenizer, model):
             translate_text(line, tokenizer, model)
         )
 
-    return "\n".join(result)
+        translated = "\n".join(result)
+
+        return restore_text(
+            translated,
+            protected
+        )
 
 # =============================================================================================================
 # READ SOURCE FILE AND WRITE TRANSLATED OUTPUT

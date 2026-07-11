@@ -248,7 +248,7 @@ for SOURCE_FILE in SOURCE_FILES:
 
     for language, model_name in OTHER_MODELS.items():
 
-        print(" ")
+        # print(" ")
         print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
 
         tokenizer, model = load_model(model_name)
@@ -306,7 +306,10 @@ for SOURCE_FILE in SOURCE_FILES:
             encoding="utf-8"
         )
 
-        print(f"***** Finished: *****")
+        # print(f"***** Finished: *****")
+
+    print(f"***** Finished: *****")
+
 
 print(" ")
 print("Done")

@@ -1,6 +1,5 @@
 import os
 import re
-import uuid
 
 # =========================
 # INPUTS (GitHub Action)
@@ -40,6 +39,7 @@ CUSTOM_PROTECTED_WORDS = [
 def protect_text(text):
 
     protected = {}
+    counter = 0
 
     patterns = [
         r"^>\s*\[!.*?\].*$",
@@ -64,8 +64,12 @@ def protect_text(text):
 
     def replace(match):
 
-        key = f"⟪¤{uuid.uuid4().hex[:8]}¤⟫"
+        nonlocal counter
+
+        key = f"XOVI_{counter}"
+
         protected[key] = match.group(0)
+        counter += 1
 
         return key
 

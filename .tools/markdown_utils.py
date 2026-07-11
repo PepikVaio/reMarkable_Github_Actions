@@ -15,40 +15,37 @@ import re
 # Additional patterns can be added from individual scripts.
 # ============================================================
 
-BASE_PATTERNS = [
-    r"^>\s*\[!.*?\].*$",          # GitHub alerts
-    r"^\[!\[.*?\]\(.*?\)\].*$",   # badges
-    r"\[[^\]]+\]\([^)]+\)",       # Markdown links
-    r"!\[[^\]]*\]\([^)]+\)",      # Markdown images
-    r"<[^>]+>",                   # HTML tags
-    r"`[^`]+`",                   # Inline code
-]
 
 
-def protect_markdown(text, extra_patterns=None):
-
-    global _counter
+def protect_text(text):
 
     protected = {}
-
-    patterns = BASE_PATTERNS.copy()
-
-    if extra_patterns:
-        patterns.extend(extra_patterns)
+    counter = 0
 
     pattern = re.compile(
-        "(?m)" + "|".join(patterns)
+        r"(?m)"
+        r"^>\s*\[!.*?\].*$"          # GitHub alerts
+        r"|^\[!\[.*?\]\(.*?\)\].*$"  # badges
+        r"|\[[^\]]+\]\([^)]+\)"      # Markdown links
+        r"|!\[[^\]]*\]\([^)]+\)"     # Markdown images
+        r"|<[^>]+>"                  # HTML tags
+        r"|`[^`]+`"                  # Inline code
+        r"|/[A-Za-z0-9_./-]+"        # Paths
+        r"|\.[A-Za-z0-9]+"           # File extensions
+        r"|\bXovi\b"
+        r"|\bQt\b"
+        r"|\bQML\b"
     )
 
     def replace(match):
 
-        global _counter
+        nonlocal counter
 
-        key = f"<<<RM_{_counter}>>>"
+        key = f"MARKDOWN_PLACEHOLDER_{counter}"
 
         protected[key] = match.group(0)
 
-        _counter += 1
+        counter += 1
 
         return key
 
@@ -59,7 +56,19 @@ def protect_markdown(text, extra_patterns=None):
 
     return result, protected
 
-def restore_markdown(text, protected):
+def restore_text(text, protected):
+
+    for key in sorted(
+        protected.keys(),
+        key=len,
+        reverse=True
+    ):
+        text = text.replace(
+            key,
+            protected[key]
+        )
+
+    return text
 
     for key in sorted(
         protected.keys(),

@@ -37,12 +37,13 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # Odešle obsah souboru do Korektor API a nahradí původní obsah opraveným textem.
 # ======================================================================================
 def restore_file(path: Path):
-    print("")
+    print(" ")
     print(f"***** Working on {path} *****")
 
     text = path.read_text(encoding="utf-8")
     original, protected = protect_text(text)
 
+    print(f"Info: Language correction only for {path}")
     print(f"Info: Protected elements {len(protected)}")
 
     response = requests.post(
@@ -123,11 +124,11 @@ if DIACRITICS_FILE:
     ] if Path(DIACRITICS_FILE) in changed_files else []
 
 else:
+    source_file = Path(os.environ["TRANSLATE_SOURCE"])
+
     files = [
-        file
-        for file in changed_files
-        if file.suffix == ".md"
-    ]
+        source_file
+    ] if source_file in changed_files else []
 
 if not files:
     print("No files to repair")

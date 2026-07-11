@@ -11,8 +11,12 @@ from markdown_utils import protect_text, restore_text
 # INPUTS (GitHub Action)
 # =========================
 
-SOURCE_FILE = Path(os.environ["TRANSLATE_SOURCE"])
+# SOURCE_FILE = Path(os.environ["TRANSLATE_SOURCE"])
+# SOURCE_LANGUAGE = os.environ["TRANSLATE_SOURCE_LANGUAGE"]
+SOURCE_DIRECTORY = Path(os.environ["TRANSLATE_SOURCE"])
 SOURCE_LANGUAGE = os.environ["TRANSLATE_SOURCE_LANGUAGE"]
+
+SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.cs.md"))
 
 MAIN_OUTPUT_ENV = os.environ.get("TRANSLATE_OUTPUT_MAIN", "")
 MAIN_OUTPUT = Path(MAIN_OUTPUT_ENV) if MAIN_OUTPUT_ENV else None
@@ -61,10 +65,13 @@ OTHER_MODELS = {
     for language in OTHER_LANGUAGES
 }
 
-if not SOURCE_FILE.exists():
-    print(f"Info: No file {SOURCE_FILE}")
-    exit(0)
+# if not SOURCE_FILE.exists():
+#     print(f"Info: No file {SOURCE_FILE}")
+#     exit(0)
 
+if not SOURCE_FILES:
+    print(f"Info: No *.cs.md files in {SOURCE_DIRECTORY}")
+    exit(0)
 
 def load_model(model_name):
 
@@ -173,39 +180,113 @@ text = SOURCE_FILE.read_text(
 print(" ")
 print(f"***** Working on {SOURCE_FILE} *****")
 
-if MAIN_OUTPUT and MAIN_MODEL:
+# if MAIN_OUTPUT and MAIN_MODEL:
 
-    print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
+#     print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
 
-    tokenizer, model = load_model(MAIN_MODEL)
-    translated = translate_markdown(text, tokenizer, model)
+#     tokenizer, model = load_model(MAIN_MODEL)
+#     translated = translate_markdown(text, tokenizer, model)
 
-    MAIN_OUTPUT.write_text(
-        translated,
+#     MAIN_OUTPUT.write_text(
+#         translated,
+#         encoding="utf-8"
+#     )
+
+#     text = translated
+
+#     print(f"***** Finished *****")
+
+# # Other translations
+# for language, model_name in OTHER_MODELS.items():
+
+#     print(" ")
+#     print(f"***** Working on: {SOURCE_FILE} *****")
+#     print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
+
+#     tokenizer, model = load_model(model_name)
+#     translated = translate_markdown(text, tokenizer, model)
+#     output_file = OTHER_OUTPUT_PATH / f"README.{language}.md"
+
+#     output_file.write_text(
+#         translated,
+#         encoding="utf-8"
+#     )
+
+#     print(f"***** Finished: *****")
+
+# print(" ")
+# print("Done")
+
+for SOURCE_FILE in SOURCE_FILES:
+
+    text = SOURCE_FILE.read_text(
         encoding="utf-8"
     )
-
-    text = translated
-
-    print(f"***** Finished *****")
-
-# Other translations
-for language, model_name in OTHER_MODELS.items():
 
     print(" ")
-    print(f"***** Working on: {SOURCE_FILE} *****")
-    print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
+    print(f"***** Working on {SOURCE_FILE} *****")
 
-    tokenizer, model = load_model(model_name)
-    translated = translate_markdown(text, tokenizer, model)
-    output_file = OTHER_OUTPUT_PATH / f"README.{language}.md"
 
-    output_file.write_text(
-        translated,
-        encoding="utf-8"
-    )
+    if MAIN_OUTPUT and MAIN_MODEL:
 
-    print(f"***** Finished: *****")
+        print(
+            f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}"
+        )
+
+        tokenizer, model = load_model(MAIN_MODEL)
+
+        translated = translate_markdown(
+            text,
+            tokenizer,
+            model
+        )
+
+        main_file = Path(
+            f"{SOURCE_FILE.name.replace('.cs.md', '.md')}"
+        )
+
+        main_file.write_text(
+            translated,
+            encoding="utf-8"
+        )
+
+        text = translated
+
+        print("***** Finished main language *****")
+
+    for language, model_name in OTHER_MODELS.items():
+
+        print(" ")
+        print(
+            f"Info: Translation from {SOURCE_LANGUAGE} → {language}"
+        )
+
+        tokenizer, model = load_model(
+            model_name
+        )
+
+        translated = translate_markdown(
+            text,
+            tokenizer,
+            model
+        )
+
+        output_file = (
+            OTHER_OUTPUT_PATH /
+            SOURCE_FILE.name.replace(
+                ".cs.md",
+                f".{language}.md"
+            )
+        )
+
+        output_file.write_text(
+            translated,
+            encoding="utf-8"
+        )
+
+        print(
+            f"***** Finished: {output_file} *****"
+        )
 
 print(" ")
 print("Done")

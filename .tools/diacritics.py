@@ -37,6 +37,7 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # Odešle obsah souboru do Korektor API a nahradí původní obsah opraveným textem.
 # ======================================================================================
 def restore_file(path: Path):
+    print(" ")
     print(f"I am repairing: {path}")
 
     text = path.read_text(encoding="utf-8")
@@ -61,7 +62,7 @@ def restore_file(path: Path):
         encoding="utf-8"
     )
 
-    print(f"Done: {path}")
+    print(f"Finished: {path}")
 
 # =======================================================================================
 # GET FILES CHANGED IN CURRENT PUSH
@@ -117,6 +118,7 @@ else:
     ]
 
 if not files:
+    print(" ")
     print("No files to repair")
     exit(0)
 

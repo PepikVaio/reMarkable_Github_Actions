@@ -27,8 +27,9 @@ BASE_PATTERNS = [
 
 def protect_markdown(text, extra_patterns=None):
 
+    global _counter
+
     protected = {}
-    counter = 0
 
     patterns = BASE_PATTERNS.copy()
 
@@ -41,13 +42,13 @@ def protect_markdown(text, extra_patterns=None):
 
     def replace(match):
 
-        nonlocal counter
+        global _counter
 
-        key = f"<<<RM{counter}>>>"
+        key = f"<<<RM_{_counter}>>>"
 
         protected[key] = match.group(0)
 
-        counter += 1
+        _counter += 1
 
         return key
 
@@ -57,7 +58,6 @@ def protect_markdown(text, extra_patterns=None):
     )
 
     return result, protected
-
 
 def restore_markdown(text, protected):
 

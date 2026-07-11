@@ -37,7 +37,6 @@ CUSTOM_PROTECTED_WORDS = [
 # Po dokončení opravy se zástupné značky obnoví zpět na původní obsah a zachová se původní struktura Markdownu.
 # ============================================================
 def protect_text(text):
-
     protected = {}
     counter = 0
 
@@ -57,26 +56,19 @@ def protect_text(text):
             rf"\b{re.escape(word)}\b"
         )
 
-    pattern = re.compile(
-        r"(?m)" + "|".join(patterns)
-    )
+    pattern = re.compile(r"(?m)" + "|".join(patterns))
 
 
     def replace(match):
-
         nonlocal counter
 
         key = f"XOVI_{counter}"
-
         protected[key] = match.group(0)
         counter += 1
 
         return key
 
-    result = pattern.sub(
-        replace,
-        text
-    )
+    result = pattern.sub(replace, text)
 
     return result, protected
 

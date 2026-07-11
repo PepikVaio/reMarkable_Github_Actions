@@ -10,83 +10,39 @@ from markdown_utils import protect_text, restore_text
 # =========================
 # INPUTS (GitHub Action)
 # =========================
+LANGUAGE_SOURCE = os.environ["LANGUAGE_SOURCE"]
+PATH_LANGUAGE_OTHER = Path(os.environ["PATH_LANGUAGE_OTHER"])
+TRANSLATE_FILE = os.environ.get("TRANSLATE_FILE", "").strip()
 
-# SOURCE_DIRECTORY = Path(os.environ["PATH_SOURCE"])
-# SOURCE_LANGUAGE = os.environ["PATH_SOURCE_LANGUAGE"]
-# SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.md"))
-
-SOURCE_LANGUAGE = os.environ["SOURCE_LANGUAGE"]
-LANGUAGE_DIRECTORY = Path(os.environ["LANGUAGE_DIRECTORY"])
-
-TRANSLATE_LANGUAGES = [
+LANGUAGE_TRANSLATE = [
     lang.strip()
-    for lang in os.environ["TRANSLATE_LANGUAGES"].split(",")
+    for lang in os.environ["LANGUAGE_TRANSLATE"].split(",")
     if lang.strip()
 ]
 
-if SOURCE_LANGUAGE == "en":
+if LANGUAGE_SOURCE == "en":
     SOURCE_DIRECTORY = Path(".")
 else:
     SOURCE_DIRECTORY = (
-        LANGUAGE_DIRECTORY /
-        SOURCE_LANGUAGE
+        PATH_LANGUAGE_OTHER /
+        LANGUAGE_SOURCE
     )
 
-SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.md"))
+if TRANSLATE_FILE:
+    SOURCE_FILES = [Path(TRANSLATE_FILE)]
+else:
+    SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.md"))
 
-
-# MAIN_OUTPUT_ENV = os.environ.get("PATH_OUTPUT_MAIN", "")
-# MAIN_OUTPUT = Path(MAIN_OUTPUT_ENV) if MAIN_OUTPUT_ENV else None
-
-# if MAIN_OUTPUT:
-#     MAIN_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-
-# MAIN_LANGUAGE = os.environ.get("PATH_OUTPUT_MAIN_LANGUAGE" ) or SOURCE_LANGUAGE
-
-# OTHER_OUTPUT_PATH = Path(os.environ["PATHE_OUTPUT_OTHER"])
-# OTHER_OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
-
-# OTHER_LANGUAGES = [
-#     lang.strip()
-#     for lang in os.environ["PATHE_OUTPUT_OTHER_LANGUAGE"].split(",")
-#     if lang.strip()
-# ]
-
-# OTHER_LANGUAGES = TRANSLATE_LANGUAGES
 OTHER_LANGUAGES = [
     lang
-    for lang in TRANSLATE_LANGUAGES
-    if lang != SOURCE_LANGUAGE
+    for lang in LANGUAGE_TRANSLATE
+    if lang != LANGUAGE_SOURCE
 ]
 
-
-if SOURCE_LANGUAGE != "en" and "en" not in OTHER_LANGUAGES:
+if LANGUAGE_SOURCE != "en" and "en" not in OTHER_LANGUAGES:
     OTHER_LANGUAGES.insert(0, "en")
 
-
-# -------------------------------------------------
-# Translation direction
-#
-# If main output exists:
-#   SOURCE -> MAIN
-#   MAIN -> OTHER LANGUAGES
-#
-# If no main output:
-#   SOURCE -> OTHER LANGUAGES
-# -------------------------------------------------
-# MAIN_MODEL = None
-
-# if MAIN_LANGUAGE != SOURCE_LANGUAGE:
-#     MAIN_MODEL = (f"Helsinki-NLP/opus-mt-{SOURCE_LANGUAGE}-{MAIN_LANGUAGE}")
-
-# TRANSLATION_BASE_LANGUAGE = (
-#     MAIN_LANGUAGE
-#     if MAIN_LANGUAGE != SOURCE_LANGUAGE
-#     else SOURCE_LANGUAGE
-# )
-
-TRANSLATION_BASE_LANGUAGE = SOURCE_LANGUAGE
-
+TRANSLATION_BASE_LANGUAGE = LANGUAGE_SOURCE
 
 OTHER_MODELS = {
     language: (
@@ -98,12 +54,10 @@ OTHER_MODELS = {
 
 if not SOURCE_FILES:
     print(" ")
-    print(f"Info: No Markdown files in {SOURCE_DIRECTORY}")
+    print("Info: No files to translate")
     exit(0)
 
-
 def load_model(model_name):
-
     tokenizer = MarianTokenizer.from_pretrained(model_name)
     model = MarianMTModel.from_pretrained(model_name)
 
@@ -117,27 +71,13 @@ def load_model(model_name):
 # Přeloží jeden blok textu a zachová chráněné prvky beze změny.
 # ===========================================================================
 def translate_text(text, tokenizer, model):
-
     if not text.strip():
         return text
 
-    inputs = tokenizer(
-        text,
-        return_tensors="pt",
-        truncation=True,
-        max_length=512
-    )
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+    translated = model.generate(**inputs, max_length=512, num_beams=4)
 
-    translated = model.generate(
-        **inputs,
-        max_length=512,
-        num_beams=4
-    )
-
-    return tokenizer.decode(
-        translated[0],
-        skip_special_tokens=True
-    )
+    return tokenizer.decode(translated[0], skip_special_tokens=True)
 
 # ==============================================================================================
 # TRANSLATE MARKDOWN DOCUMENT
@@ -149,12 +89,10 @@ def translate_text(text, tokenizer, model):
 # Bloky kódu se přeskočí, nadpisy zachovají své značky a prázdné řádky zůstanou.
 # ==============================================================================================
 def translate_markdown(text, tokenizer, model):
-
     protected_text, protected = protect_text(text)
     result = []
     lines = protected_text.splitlines()
     total = len(lines)
-
     in_code = False
 
     for index, line in enumerate(lines, start=1):
@@ -172,28 +110,21 @@ def translate_markdown(text, tokenizer, model):
             prefix = re.match(r"^#+\s*", line).group()
             content = line[len(prefix):]
 
-            result.append(
-                prefix + translate_text(content, tokenizer, model)
-            )
+            result.append(prefix + translate_text(content, tokenizer, model))
             continue
 
         if not line.strip():
             result.append(line)
             continue
 
-        result.append(
-            translate_text(line, tokenizer, model)
-        )
+        result.append(translate_text(line, tokenizer, model))
 
         if index % 10 == 0 or index == total:
             print(f"Progress: {index}/{total} lines ({index/total:.0%})", flush=True)
 
     translated = "\n".join(result)
 
-    return restore_text(
-        translated,
-        protected
-    )
+    return restore_text(translated, protected)
 
 # =============================================================================================================
 # READ SOURCE FILE AND WRITE TRANSLATED OUTPUT
@@ -203,113 +134,39 @@ def translate_markdown(text, tokenizer, model):
 # Načte zdrojový Markdown soubor, přeloží jeho obsah a uloží přeloženou verzi do výstupního souboru.
 # =============================================================================================================
 for SOURCE_FILE in SOURCE_FILES:
-
     text = SOURCE_FILE.read_text(encoding="utf-8")
 
     print(" ")
     print(f"***** Working on {SOURCE_FILE} *****")
 
-    # if MAIN_OUTPUT and MAIN_MODEL:
-
-    #     print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
-
-    #     tokenizer, model = load_model(MAIN_MODEL)
-    #     translated = translate_markdown(text, tokenizer, model)
-
-    #     main_file = Path(SOURCE_FILE.name)
-    #     main_file.write_text(translated, encoding="utf-8")
-    #     text = translated
-
-    #     print(f"***** Finished: *****")
-
-    # if SOURCE_LANGUAGE != "en":
-
-    #     print(f"Info: Translation from {SOURCE_LANGUAGE} → en")
-
-    #     tokenizer, model = load_model(f"Helsinki-NLP/opus-mt-{SOURCE_LANGUAGE}-en")
-    #     translated = translate_markdown(
-    #         text,
-    #         tokenizer,
-    #         model
-    #     )
-
-    #     main_file = Path(SOURCE_FILE.name)
-    #     main_file.write_text(
-    #         translated,
-    #         encoding="utf-8"
-    #     )
-
-    #     text = translated
-
-    #     print("***** Finished English version *****")
-
-
-
-
     for language, model_name in OTHER_MODELS.items():
-
-        # print(" ")
-        print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
+        print(f"Info: Translation from {LANGUAGE_SOURCE} → {language}")
 
         tokenizer, model = load_model(model_name)
-        # translated = translate_markdown(text, tokenizer, model)
         translated = translate_markdown(
             SOURCE_FILE.read_text(encoding="utf-8"),
             tokenizer,
             model
         )
 
-
-        # language_directory = (
-        #     OTHER_OUTPUT_PATH /
-        #     language
-        # )
-
-        # language_directory.mkdir(
-        #     parents=True,
-        #     exist_ok=True
-        # )
-
-        # output_file = (
-        #     language_directory /
-        #     SOURCE_FILE.name
-        # )
-
-        # if language == "en":
-        #     output_directory = Path(".")
-        # else:
-        #     output_directory = (
-        #         LANGUAGE_DIRECTORY /
-        #         language
-        #     )
-
         if language == "en":
             output_directory = Path(".")
         else:
             output_directory = (
-                LANGUAGE_DIRECTORY /
+                PATH_LANGUAGE_OTHER /
                 language
             )
 
-        output_directory.mkdir(
-            parents=True,
-            exist_ok=True
-        )
+        output_directory.mkdir(parents=True, exist_ok=True)
 
         output_file = (
             output_directory /
             SOURCE_FILE.name
         )
 
-        output_file.write_text(
-            translated,
-            encoding="utf-8"
-        )
-
-        # print(f"***** Finished: *****")
+        output_file.write_text(translated, encoding="utf-8")
 
     print(f"***** Finished: *****")
-
 
 print(" ")
 print("Done")

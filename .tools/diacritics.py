@@ -3,6 +3,7 @@ import re
 import requests
 import subprocess
 from pathlib import Path
+from markdown_utils import protect_markdown, restore_markdown
 
 # =========================
 # INPUTS (GitHub Action)
@@ -23,51 +24,10 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # Po dokončení opravy se zástupné značky obnoví zpět na původní obsah a zachová se původní struktura Markdownu.
 # ===================================================================================================================
 
-def protect_markdown(text):
 
-    protected = {}
-    counter = 0
 
-    pattern = re.compile(
-        r"(?m)"
-        r"^>\s*\[!.*?\].*$"          # GitHub alerts
-        r"|^\[!\[.*?\]\(.*?\)\].*$"  # badges
-        r"|\[[^\]]+\]\([^\)]+\)"     # odkazy
-        r"|<[^>]+>"                  # HTML tagy
-    )
 
-    def replace(match):
 
-        nonlocal counter
-
-        key = f"MARKDOWN_PLACEHOLDER_{counter}"
-
-        protected[key] = match.group(0)
-
-        counter += 1
-
-        return key
-
-    result = pattern.sub(
-        replace,
-        text
-    )
-
-    return result, protected
-
-def restore_markdown(text, protected):
-
-    for key in sorted(
-        protected.keys(),
-        key=len,
-        reverse=True
-    ):
-        text = text.replace(
-            key,
-            protected[key]
-        )
-
-    return text
 
 # ======================================================================================
 # ADD DIACRITICS IN FILE

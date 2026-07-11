@@ -64,7 +64,7 @@ def protect_text(text):
 
     def replace(match):
 
-        key = f"⟪VAR_{uuid.uuid4().hex[:8]}⟫"
+        key = f"⟪¤{uuid.uuid4().hex[:8]}¤⟫"
         protected[key] = match.group(0)
 
         return key

@@ -218,7 +218,7 @@ for language, model_name in OTHER_MODELS.items():
         encoding="utf-8"
     )
 
-    print(f"***** Finished: {output_file} *****")
+    print(f"***** Finished: *****")
 
 print(" ")
 print("Done")

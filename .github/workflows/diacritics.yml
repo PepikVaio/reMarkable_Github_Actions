@@ -10,6 +10,8 @@ env:
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
 
+  # Downloading is only needed because this is a shared workflow called from external repos.
+  # Running standalone in this repo would only need: .tools/diacritics.py and .tools/translate.py, no PATH_TOOLS
   PATH_TOOLS: /tmp/tools
   PATH_DIACRITICS: /tmp/tools/.tools/diacritics.py
   PATH_TRANSLATE: /tmp/tools/.tools/translate.py
@@ -72,41 +74,40 @@ jobs:
   main:
     name: 'Restore Czech text and translate'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # Downloading is only needed because this is a shared workflow called from external repos.
       - name: Checkout tools
-        uses: actions/checkout@v4
-        with:
-          repository: PepikVaio/reMarkable_Github_Actions
-          path: /tmp/tools
-
-      # - name: Checkout tools
-      #   run: |
-      #     git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
-
+        run: |
+          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - name: Install dependencies
         run: |
           pip install requests
           if [ "${{ env.IS_ENABLED_TRANSLATE }}" = "true" ]; then
             pip install transformers sentencepiece torch sacremoses
           fi
+
       - name: Add diacritics
         if: env.TRANSLATE_SOURCE_LANGUAGE == 'cs'
         run: |
           python ${{ env.PATH_DIACRITICS }}
+
       - name: Translate *md files
         if: env.IS_ENABLED_TRANSLATE == 'true'
         run: |
           python ${{ env.PATH_TRANSLATE }}
+
       - name: Commit result
         run: |
           git config user.name "github-actions[bot]"

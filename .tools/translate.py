@@ -1,13 +1,13 @@
 import os
 import re
 from pathlib import Path
+os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 from transformers import MarianMTModel, MarianTokenizer
 from markdown_utils import protect_text, restore_text
 
 # =========================
 # INPUTS (GitHub Action)
 # =========================
-os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 
 SOURCE_FILE = Path(os.environ["TRANSLATE_SOURCE"])
 SOURCE_LANGUAGE = os.environ["TRANSLATE_SOURCE_LANGUAGE"]

@@ -116,7 +116,8 @@ else:
 
     files = [
         file
-        for file in source_directory.glob("*.cs.md")
+        # for file in source_directory.glob("*.cs.md")
+        for file in source_directory.glob("*.md")
         if file in changed_files
     ]
 

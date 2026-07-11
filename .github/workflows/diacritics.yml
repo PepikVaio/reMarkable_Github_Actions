@@ -1,4 +1,4 @@
-name: Restore Czech text and translate
+name: Restore text and translate Markdown documentation
 
 on:
   workflow_call:
@@ -20,19 +20,19 @@ env:
 
   PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
 
-  # ============================================================
+  # =================================================================
   # CONFIG DIACRITICS (editable)
   #
   # IS_ENABLED_DIACRITICS: only for cs
-  # DIACRITICS_MESSAGE: empty or message
-  # DIACRITICS_FILE: empty = all *md files or (choose *md file)
-  # ============================================================
+  # COMMIT_MESSAGE: empty or message
+  # DIACRITICS_FILE: empty = all Markdown files or (choose *md file)
+  # =================================================================
   IS_ENABLED_DIACRITICS: true
   IS_ENABLED_TRANSLATE: true
 
   DIACRITICS_FILE: ""
-  DIACRITICS_MESSAGE: "Added Czech diacritics"
-
+  COMMIT_MESSAGE: "Updated documentation translations"
+  
   # ===============================================================
   # CONFIG TRANSLATION (editable)
   #
@@ -40,14 +40,14 @@ env:
   #    - Set your language as the source.
   #    - English README.md will be generated automatically.
   #
-  # TRANSLATE_SOURCE: .language/cs
-  # TRANSLATE_SOURCE_LANGUAGE: cs
+  # PATH_SOURCE: .language/cs
+  # PATH_SOURCE_LANGUAGE: cs
   
-  # TRANSLATE_OUTPUT_MAIN: .
-  # TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
+  # PATH_OUTPUT_MAIN: .
+  # PATH_OUTPUT_MAIN_LANGUAGE: en
   
-  # TRANSLATE_OUTPUT_OTHER: .language
-  # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
+  # PATHE_OUTPUT_OTHER: .language
+  # PATHE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
   #
   # ===============================================================
   # ===============================================================
@@ -56,30 +56,64 @@ env:
   #    - Use README.md as the source file.
   #    - Only translations into other languages will be generated.
   #
-  # TRANSLATE_SOURCE: .
-  # TRANSLATE_SOURCE_LANGUAGE: en
+  # PATH_SOURCE: .
+  # PATH_SOURCE_LANGUAGE: en
   
-  # TRANSLATE_OUTPUT_MAIN: ""
-  # TRANSLATE_OUTPUT_MAIN_LANGUAGE: ""
+  # PATH_OUTPUT_MAIN: ""
+  # PATH_OUTPUT_MAIN_LANGUAGE: ""
   
-  # TRANSLATE_OUTPUT_OTHER: .language
-  # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
+  # PATHE_OUTPUT_OTHER: .language
+  # PATHE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
   # ===============================================================
-  TRANSLATE_SOURCE: .
-  TRANSLATE_SOURCE_LANGUAGE: en
+
+  # PATH_SOURCE: .
+  # PATH_SOURCE_LANGUAGE: en
   
-  TRANSLATE_OUTPUT_MAIN: ""
-  TRANSLATE_OUTPUT_MAIN_LANGUAGE: ""
+  # PATH_OUTPUT_MAIN: ""
+  # PATH_OUTPUT_MAIN_LANGUAGE: ""
   
-  TRANSLATE_OUTPUT_OTHER: .language
-  TRANSLATE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
+  # PATHE_OUTPUT_OTHER: .language
+  # PATHE_OUTPUT_OTHER_LANGUAGE: "cs, de, fr, it"
+
+
+
+
+
+  # ===============================================================
+  # CONFIG TRANSLATION (editable)
+  #
+  # SOURCE_LANGUAGE:
+  #   Language of the original Markdown files.
+  #
+  # If SOURCE_LANGUAGE is "en":
+  #   Source files are read from repository root.
+  #   Other languages are stored in .language/<language>/
+  #
+  # If SOURCE_LANGUAGE is not "en":
+  #   Source files are read from .language/<language>/.
+  #   English translation is stored in repository root.
+  #
+  # TRANSLATE_LANGUAGES:
+  #   Languages that should be generated.
+  #
+  # LANGUAGE_DIRECTORY:
+  #   Directory for translated languages.
+  #
+  # ===============================================================
+
+  SOURCE_LANGUAGE: en
+
+  TRANSLATE_LANGUAGES: "cs, de, fr, it"
+
+  LANGUAGE_DIRECTORY: .language
+
 
 permissions:
   contents: write
 
 jobs:
   main:
-    name: 'Restore Czech text and translate'
+    name: 'Restore text and translate Markdown documentation'
     runs-on: ubuntu-latest
 
     steps:
@@ -106,11 +140,12 @@ jobs:
           fi
 
       - name: Add diacritics
-        if: env.IS_ENABLED_DIACRITICS == 'true' && env.TRANSLATE_SOURCE_LANGUAGE == 'cs'
+        # if: env.IS_ENABLED_DIACRITICS == 'true' && env.PATH_SOURCE_LANGUAGE == 'cs'
+        if: env.IS_ENABLED_DIACRITICS == 'true' && env.SOURCE_LANGUAGE == 'cs'
         run: |
           python ${{ env.PATH_DIACRITICS }}
 
-      - name: Translate *md files
+      - name: Translate Markdown files
         if: env.IS_ENABLED_TRANSLATE == 'true'
         run: |
           python ${{ env.PATH_TRANSLATE }}
@@ -127,5 +162,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "${{ env.DIACRITICS_MESSAGE }} [skip ci]"
+          git commit -m "${{ env.COMMIT_MESSAGE }} [skip ci]"
           git push

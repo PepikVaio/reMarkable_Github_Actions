@@ -137,5 +137,5 @@ for file in files:
     if file.is_file():
         restore_file(file)
 
-print("")
+print(" ")
 print("Done")

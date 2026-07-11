@@ -37,11 +37,13 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # Odešle obsah souboru do Korektor API a nahradí původní obsah opraveným textem.
 # ======================================================================================
 def restore_file(path: Path):
-    print(" ")
-    print(f"Processing: {path}")
+    print()
+    print(f"***** Working on {path} *****")
 
     text = path.read_text(encoding="utf-8")
     original, protected = protect_text(text)
+
+    print(f"Info: Protected elements {len(protected)}")
 
     response = requests.post(
         API,
@@ -72,13 +74,8 @@ def restore_file(path: Path):
         encoding="utf-8"
     )
 
-    print(f"Finished: {path}")
+    print(f"***** Finished *****")
 
-
-
-
-
-    
 # =======================================================================================
 # GET FILES CHANGED IN CURRENT PUSH
 # Uses git history to find only files modified between previous and current commit.
@@ -133,7 +130,6 @@ else:
     ]
 
 if not files:
-    print(" ")
     print("No files to repair")
     exit(0)
 
@@ -141,5 +137,4 @@ for file in files:
     if file.is_file():
         restore_file(file)
 
-print(" ")
 print("Done")

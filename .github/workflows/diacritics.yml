@@ -90,11 +90,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      # - name: Checkout tools
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: PepikVaio/reMarkable_Github_Actions
+      #     path: ${{ env.PATH_TOOLS }}
+
       - name: Checkout tools
-        uses: actions/checkout@v4
-        with:
-          repository: PepikVaio/reMarkable_Github_Actions
-          path: ${{ env.PATH_TOOLS }}
+        run: |
+          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
 
 
 

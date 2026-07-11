@@ -101,9 +101,9 @@ env:
   #
   # ===============================================================
 
-  SOURCE_LANGUAGE: en
+  SOURCE_LANGUAGE: cs
 
-  TRANSLATE_LANGUAGES: "cs, de, fr, it"
+  TRANSLATE_LANGUAGES: "en, de"
 
   LANGUAGE_DIRECTORY: .language
 

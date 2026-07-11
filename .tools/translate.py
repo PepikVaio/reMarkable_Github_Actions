@@ -82,14 +82,6 @@ def load_model(model_name):
 # ===================================================================================================
 
 
-TRANSLATE_PATTERNS = [
-    r"/[A-Za-z0-9_./-]+",   # paths
-    r"\.[A-Za-z0-9]+",      # file extensions
-    r"\bXovi\b",
-    r"\bQt\b",
-    r"\bQML\b",
-]
-
 
 # ===========================================================================
 # TRANSLATE TEXT
@@ -167,13 +159,13 @@ def translate_markdown(text, tokenizer, model):
             translate_text(line, tokenizer, model)
         )
 
-        translated = "\n".join(result)
 
-        return restore_text(
-            translated,
-            protected
-        )
+    translated = "\n".join(result)
 
+    return restore_text(
+        translated,
+        protected
+    )
 # =============================================================================================================
 # READ SOURCE FILE AND WRITE TRANSLATED OUTPUT
 # Reads the source Markdown file, translates its content, and saves the translated version to the output file.

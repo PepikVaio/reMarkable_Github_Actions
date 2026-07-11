@@ -161,7 +161,7 @@ def translate_markdown(text, tokenizer, model):
         )
 
         if index % 10 == 0 or index == total:
-            print(f"Progress: {index}/{total} lines ({index/total:.0%})")
+            print(f"Progress: {index}/{total} lines ({index/total:.0%})", flush=True)
 
     translated = "\n".join(result)
 

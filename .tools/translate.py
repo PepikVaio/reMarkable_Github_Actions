@@ -7,6 +7,7 @@ from markdown_utils import protect_text, restore_text
 # =========================
 # INPUTS (GitHub Action)
 # =========================
+os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 
 SOURCE_FILE = Path(os.environ["TRANSLATE_SOURCE"])
 SOURCE_LANGUAGE = os.environ["TRANSLATE_SOURCE_LANGUAGE"]
@@ -122,52 +123,6 @@ def translate_text(text, tokenizer, model):
 # Bloky kódu se přeskočí, nadpisy zachovají své značky a prázdné řádky zůstanou.
 # ==============================================================================================
 
-# def translate_markdown(text, tokenizer, model):
-
-#     protected_text, protected = protect_text(text)
-#     result = []
-
-#     in_code = False
-
-#     for line in protected_text.splitlines():
-
-#         if line.startswith("```"):
-#             in_code = not in_code
-#             result.append(line)
-#             continue
-
-#         if in_code:
-#             result.append(line)
-#             continue
-
-#         if line.startswith("#"):
-#             prefix = re.match(r"^#+\s*", line).group()
-#             content = line[len(prefix):]
-
-#             result.append(
-#                 prefix + translate_text(content, tokenizer, model)
-#             )
-#             continue
-
-#         if not line.strip():
-#             result.append(line)
-#             continue
-
-#         result.append(
-#             translate_text(line, tokenizer, model)
-#         )
-
-
-#     translated = "\n".join(result)
-
-#     return restore_text(
-#         translated,
-#         protected
-#     )
-
-
-
-
 def translate_markdown(text, tokenizer, model):
 
     protected_text, protected = protect_text(text)
@@ -206,8 +161,7 @@ def translate_markdown(text, tokenizer, model):
         )
 
         if index % 10 == 0 or index == total:
-            print(f"Progress: {index}/{total} lines")
-
+            print(f"Progress: {index}/{total} lines ({index/total:.0%})")
 
     translated = "\n".join(result)
 

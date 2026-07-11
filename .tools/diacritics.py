@@ -67,7 +67,7 @@ def restore_file(path: Path):
 
         for old, new in zip(original_words, result_words):
             if old != new:
-                print(f"Changes: {old} -> {new}")
+                print(f"Changes: {old} -> {new}", flush=True)
 
     path.write_text(
         result,

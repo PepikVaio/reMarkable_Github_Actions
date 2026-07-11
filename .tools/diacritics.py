@@ -121,6 +121,8 @@ else:
 if not files:
     print(" ")
     print("No files to repair")
+    print("Done")
+    exit(0)
 
 for file in files:
     if file.is_file():

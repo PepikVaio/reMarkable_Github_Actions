@@ -21,7 +21,7 @@ env:
   # PATH_DIACRITICS: .github/.tools/tools/diacritics.py
   # PATH_TRANSLATE: .github/.tools/tools/translate.py
 
-  PATH_TOOLS: /tmp/.tools
+  PATH_TOOLS: /tmp
   PATH_DIACRITICS: /tmp/.tools/diacritics.py
   PATH_TRANSLATE: /tmp/.tools/translate.py
 

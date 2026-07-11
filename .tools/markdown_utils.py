@@ -69,15 +69,3 @@ def restore_text(text, protected):
         )
 
     return text
-
-    for key in sorted(
-        protected.keys(),
-        key=len,
-        reverse=True
-    ):
-        text = text.replace(
-            key,
-            protected[key]
-        )
-
-    return text

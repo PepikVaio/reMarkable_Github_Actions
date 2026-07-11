@@ -37,7 +37,6 @@ MODEL = os.environ["DIACRITICS_MODEL"]
 # Odešle obsah souboru do Korektor API a nahradí původní obsah opraveným textem.
 # ======================================================================================
 def restore_file(path: Path):
-    print()
     print(f"***** Working on {path} *****")
 
     text = path.read_text(encoding="utf-8")
@@ -60,7 +59,7 @@ def restore_file(path: Path):
     result = restore_text(result, protected)
 
     if text == result:
-        print("No changes detected")
+        print("Info: No changes required")
     else:
         original_words = text.split()
         result_words = result.split()
@@ -137,4 +136,5 @@ for file in files:
     if file.is_file():
         restore_file(file)
 
+print()
 print("Done")

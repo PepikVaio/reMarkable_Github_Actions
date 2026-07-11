@@ -41,7 +41,8 @@ def protect_text(text):
 
         nonlocal counter
 
-        key = f"rM_{counter}"
+        # key = f"MARKDOWN_PLACEHOLDER_{counter}"
+        key = f"XOVI_{counter}"
 
         protected[key] = match.group(0)
 

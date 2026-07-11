@@ -66,10 +66,10 @@ env:
   # TRANSLATE_OUTPUT_OTHER_LANGUAGE: "de, fr, it"
   # ===============================================================
   # TRANSLATE_SOURCE: .language/README.cs.md
-  TRANSLATE_SOURCE: .language
+  TRANSLATE_SOURCE: .language/cs
   TRANSLATE_SOURCE_LANGUAGE: cs
   
-  TRANSLATE_OUTPUT_MAIN: README.md
+  TRANSLATE_OUTPUT_MAIN: .
   TRANSLATE_OUTPUT_MAIN_LANGUAGE: en
   
   TRANSLATE_OUTPUT_OTHER: .language

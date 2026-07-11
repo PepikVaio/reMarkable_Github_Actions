@@ -10,27 +10,59 @@ from markdown_utils import protect_text, restore_text
 # =========================
 # INPUTS (GitHub Action)
 # =========================
-SOURCE_DIRECTORY = Path(os.environ["TRANSLATE_SOURCE"])
-SOURCE_LANGUAGE = os.environ["TRANSLATE_SOURCE_LANGUAGE"]
+
+# SOURCE_DIRECTORY = Path(os.environ["PATH_SOURCE"])
+# SOURCE_LANGUAGE = os.environ["PATH_SOURCE_LANGUAGE"]
+# SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.md"))
+
+SOURCE_LANGUAGE = os.environ["SOURCE_LANGUAGE"]
+LANGUAGE_DIRECTORY = Path(os.environ["LANGUAGE_DIRECTORY"])
+
+TRANSLATE_LANGUAGES = [
+    lang.strip()
+    for lang in os.environ["TRANSLATE_LANGUAGES"].split(",")
+    if lang.strip()
+]
+
+if SOURCE_LANGUAGE == "en":
+    SOURCE_DIRECTORY = Path(".")
+else:
+    SOURCE_DIRECTORY = (
+        LANGUAGE_DIRECTORY /
+        SOURCE_LANGUAGE
+    )
 
 SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.md"))
 
-MAIN_OUTPUT_ENV = os.environ.get("TRANSLATE_OUTPUT_MAIN", "")
-MAIN_OUTPUT = Path(MAIN_OUTPUT_ENV) if MAIN_OUTPUT_ENV else None
 
-if MAIN_OUTPUT:
-    MAIN_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+# MAIN_OUTPUT_ENV = os.environ.get("PATH_OUTPUT_MAIN", "")
+# MAIN_OUTPUT = Path(MAIN_OUTPUT_ENV) if MAIN_OUTPUT_ENV else None
 
-MAIN_LANGUAGE = os.environ.get("TRANSLATE_OUTPUT_MAIN_LANGUAGE" ) or SOURCE_LANGUAGE
+# if MAIN_OUTPUT:
+#     MAIN_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
-OTHER_OUTPUT_PATH = Path(os.environ["TRANSLATE_OUTPUT_OTHER"])
-OTHER_OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
+# MAIN_LANGUAGE = os.environ.get("PATH_OUTPUT_MAIN_LANGUAGE" ) or SOURCE_LANGUAGE
 
+# OTHER_OUTPUT_PATH = Path(os.environ["PATHE_OUTPUT_OTHER"])
+# OTHER_OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
+
+# OTHER_LANGUAGES = [
+#     lang.strip()
+#     for lang in os.environ["PATHE_OUTPUT_OTHER_LANGUAGE"].split(",")
+#     if lang.strip()
+# ]
+
+# OTHER_LANGUAGES = TRANSLATE_LANGUAGES
 OTHER_LANGUAGES = [
-    lang.strip()
-    for lang in os.environ["TRANSLATE_OUTPUT_OTHER_LANGUAGE"].split(",")
-    if lang.strip()
+    lang
+    for lang in TRANSLATE_LANGUAGES
+    if lang != SOURCE_LANGUAGE
 ]
+
+
+if SOURCE_LANGUAGE != "en" and "en" not in OTHER_LANGUAGES:
+    OTHER_LANGUAGES.insert(0, "en")
+
 
 # -------------------------------------------------
 # Translation direction
@@ -42,16 +74,19 @@ OTHER_LANGUAGES = [
 # If no main output:
 #   SOURCE -> OTHER LANGUAGES
 # -------------------------------------------------
-MAIN_MODEL = None
+# MAIN_MODEL = None
 
-if MAIN_LANGUAGE != SOURCE_LANGUAGE:
-    MAIN_MODEL = (f"Helsinki-NLP/opus-mt-{SOURCE_LANGUAGE}-{MAIN_LANGUAGE}")
+# if MAIN_LANGUAGE != SOURCE_LANGUAGE:
+#     MAIN_MODEL = (f"Helsinki-NLP/opus-mt-{SOURCE_LANGUAGE}-{MAIN_LANGUAGE}")
 
-TRANSLATION_BASE_LANGUAGE = (
-    MAIN_LANGUAGE
-    if MAIN_LANGUAGE != SOURCE_LANGUAGE
-    else SOURCE_LANGUAGE
-)
+# TRANSLATION_BASE_LANGUAGE = (
+#     MAIN_LANGUAGE
+#     if MAIN_LANGUAGE != SOURCE_LANGUAGE
+#     else SOURCE_LANGUAGE
+# )
+
+TRANSLATION_BASE_LANGUAGE = SOURCE_LANGUAGE
+
 
 OTHER_MODELS = {
     language: (
@@ -174,19 +209,42 @@ for SOURCE_FILE in SOURCE_FILES:
     print(" ")
     print(f"***** Working on {SOURCE_FILE} *****")
 
+    # if MAIN_OUTPUT and MAIN_MODEL:
 
-    if MAIN_OUTPUT and MAIN_MODEL:
+    #     print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
 
-        print(f"Info: Translation from {SOURCE_LANGUAGE} → {MAIN_LANGUAGE}")
+    #     tokenizer, model = load_model(MAIN_MODEL)
+    #     translated = translate_markdown(text, tokenizer, model)
 
-        tokenizer, model = load_model(MAIN_MODEL)
-        translated = translate_markdown(text, tokenizer, model)
+    #     main_file = Path(SOURCE_FILE.name)
+    #     main_file.write_text(translated, encoding="utf-8")
+    #     text = translated
 
-        main_file = Path(SOURCE_FILE.name)
-        main_file.write_text(translated, encoding="utf-8")
-        text = translated
+    #     print(f"***** Finished: *****")
 
-        print(f"***** Finished: *****")
+    # if SOURCE_LANGUAGE != "en":
+
+    #     print(f"Info: Translation from {SOURCE_LANGUAGE} → en")
+
+    #     tokenizer, model = load_model(f"Helsinki-NLP/opus-mt-{SOURCE_LANGUAGE}-en")
+    #     translated = translate_markdown(
+    #         text,
+    #         tokenizer,
+    #         model
+    #     )
+
+    #     main_file = Path(SOURCE_FILE.name)
+    #     main_file.write_text(
+    #         translated,
+    #         encoding="utf-8"
+    #     )
+
+    #     text = translated
+
+    #     print("***** Finished English version *****")
+
+
+
 
     for language, model_name in OTHER_MODELS.items():
 
@@ -194,20 +252,52 @@ for SOURCE_FILE in SOURCE_FILES:
         print(f"Info: Translation from {SOURCE_LANGUAGE} → {language}")
 
         tokenizer, model = load_model(model_name)
-        translated = translate_markdown(text, tokenizer, model)
-
-        language_directory = (
-            OTHER_OUTPUT_PATH /
-            language
+        # translated = translate_markdown(text, tokenizer, model)
+        translated = translate_markdown(
+            SOURCE_FILE.read_text(encoding="utf-8"),
+            tokenizer,
+            model
         )
 
-        language_directory.mkdir(
+
+        # language_directory = (
+        #     OTHER_OUTPUT_PATH /
+        #     language
+        # )
+
+        # language_directory.mkdir(
+        #     parents=True,
+        #     exist_ok=True
+        # )
+
+        # output_file = (
+        #     language_directory /
+        #     SOURCE_FILE.name
+        # )
+
+        # if language == "en":
+        #     output_directory = Path(".")
+        # else:
+        #     output_directory = (
+        #         LANGUAGE_DIRECTORY /
+        #         language
+        #     )
+
+        if language == "en":
+            output_directory = Path(".")
+        else:
+            output_directory = (
+                LANGUAGE_DIRECTORY /
+                language
+            )
+
+        output_directory.mkdir(
             parents=True,
             exist_ok=True
         )
 
         output_file = (
-            language_directory /
+            output_directory /
             SOURCE_FILE.name
         )
 

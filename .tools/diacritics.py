@@ -25,7 +25,7 @@ def restore_file(path: Path):
     text = path.read_text(encoding="utf-8")
     original, protected = protect_text(text)
 
-    print(f"Caution: Language correction only for {path}")
+    print(f"Caution: Language correction only for cs language")
     print(f"Info: Protected elements {len(protected)}")
 
     response = requests.post(

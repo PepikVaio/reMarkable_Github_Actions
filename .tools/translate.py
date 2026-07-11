@@ -16,7 +16,8 @@ from markdown_utils import protect_text, restore_text
 SOURCE_DIRECTORY = Path(os.environ["TRANSLATE_SOURCE"])
 SOURCE_LANGUAGE = os.environ["TRANSLATE_SOURCE_LANGUAGE"]
 
-SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.cs.md"))
+# SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.cs.md"))
+SOURCE_FILES = sorted(SOURCE_DIRECTORY.glob("*.md"))
 
 MAIN_OUTPUT_ENV = os.environ.get("TRANSLATE_OUTPUT_MAIN", "")
 MAIN_OUTPUT = Path(MAIN_OUTPUT_ENV) if MAIN_OUTPUT_ENV else None
@@ -69,9 +70,14 @@ OTHER_MODELS = {
 #     print(f"Info: No file {SOURCE_FILE}")
 #     exit(0)
 
+# if not SOURCE_FILES:
+#     print(f"Info: No *.cs.md files in {SOURCE_DIRECTORY}")
+#     exit(0)
+
 if not SOURCE_FILES:
-    print(f"Info: No *.cs.md files in {SOURCE_DIRECTORY}")
+    print(f"Info: No Markdown files in {SOURCE_DIRECTORY}")
     exit(0)
+
 
 def load_model(model_name):
 
@@ -241,8 +247,12 @@ for SOURCE_FILE in SOURCE_FILES:
             model
         )
 
+        # main_file = Path(
+        #     f"{SOURCE_FILE.name.replace('.cs.md', '.md')}"
+        # )
+
         main_file = Path(
-            f"{SOURCE_FILE.name.replace('.cs.md', '.md')}"
+            SOURCE_FILE.name
         )
 
         main_file.write_text(
@@ -271,13 +281,31 @@ for SOURCE_FILE in SOURCE_FILES:
             model
         )
 
-        output_file = (
+        # output_file = (
+        #     OTHER_OUTPUT_PATH /
+        #     SOURCE_FILE.name.replace(
+        #         ".cs.md",
+        #         f".{language}.md"
+        #     )
+        # )
+
+
+        language_directory = (
             OTHER_OUTPUT_PATH /
-            SOURCE_FILE.name.replace(
-                ".cs.md",
-                f".{language}.md"
-            )
+            language
         )
+
+        language_directory.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        output_file = (
+            language_directory /
+            SOURCE_FILE.name
+        )
+
+
 
         output_file.write_text(
             translated,

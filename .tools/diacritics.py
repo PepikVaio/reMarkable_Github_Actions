@@ -106,13 +106,33 @@ if DIACRITICS_FILE:
 
 else:
 
-    source_directory = Path(os.environ["TRANSLATE_SOURCE"])
+    # source_directory = Path(os.environ["PATH_SOURCE"])
+
+    # files = [
+    #     file
+    #     for file in source_directory.glob("*.md")
+    #     if file in changed_files
+    # ]
+
+    source_language = os.environ["SOURCE_LANGUAGE"]
+    language_directory = Path(os.environ["LANGUAGE_DIRECTORY"])
+
+    if source_language == "en":
+        source_directory = Path(".")
+    else:
+        source_directory = (
+            language_directory /
+            source_language
+        )
 
     files = [
         file
         for file in source_directory.glob("*.md")
         if file in changed_files
     ]
+
+
+
 
 if not files:
     print(" ")

@@ -103,10 +103,7 @@ def translate_text(text, tokenizer, model):
     if not text.strip():
         return text
     
-    original, protected = protect_text(
-        text,
-        TRANSLATE_PATTERNS
-    )    
+    original, protected = protect_text(text)    
 
     inputs = tokenizer(
         original,

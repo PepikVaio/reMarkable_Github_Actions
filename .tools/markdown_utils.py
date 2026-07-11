@@ -21,11 +21,21 @@ CUSTOM_PROTECTED_WORDS = [
 # - HTML tags
 # - inline code
 #
-# Additional patterns can be added from individual scripts.
+# Temporarily replaces technical elements with placeholders before translation.
+# Prevents the translation model from modifying code, paths, extensions, and project specific names.
+#
+# Temporarily replaces Markdown syntax elements with placeholders before sending text to the correction API.
+# This prevents the API from modifying links, badges, alerts, HTML tags, and other non-text parts of the document.
+# Placeholders are restored after correction to keep the original Markdown structure.
+#
+# (cs)
+# Dočasně nahradí technické prvky zástupnými značkami před překladem.
+# Zabrání překladači upravovat kód, cesty, přípony a názvy projektů.
+#
+# Dočasně nahradí prvky Markdownu zástupnými značkami před odesláním textu do API.
+# Zabrání tak úpravám odkazů, odznaků, upozornění, HTML tagů a dalších částí dokumentu, které nemají být opravovány.
+# Po dokončení opravy se zástupné značky obnoví zpět na původní obsah a zachová se původní struktura Markdownu.
 # ============================================================
-
-
-
 def protect_text(text):
 
     protected = {}
@@ -60,7 +70,6 @@ def protect_text(text):
         key = f"XOVI_{counter}"
 
         protected[key] = match.group(0)
-
         counter += 1
 
         return key

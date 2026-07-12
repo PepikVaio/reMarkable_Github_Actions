@@ -21,6 +21,7 @@ env:
   # Running standalone in this repo would only need: .tools/diacritics.py and .tools/translate.py, no PATH_TOOLS
   PATH_TOOLS: /tmp/tools
   PATH_DIACRITICS: /tmp/tools/.tools/markdown_diacritics.py
+  PATH_CHECK: /tmp/tools/.tools/markdown_check.py
   PATH_TRANSLATE: /tmp/tools/.tools/markdown_translate.py
 
 permissions:
@@ -41,16 +42,10 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: 'Check deleted Markdown'
+      - name: Check deleted Markdown
         id: check
         run: |
-          if git diff --name-status HEAD^ HEAD | grep -E "^D.*\.md$"; then
-            echo "Markdown deleted"
-            echo "deleted=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Markdown changed or added"
-            echo "deleted=false" >> "$GITHUB_OUTPUT"
-          fi
+          python ${{ env.PATH_CHECK }}
 
   main:
     name: 'Restore text and translate Markdown documentation'

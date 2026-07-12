@@ -27,4 +27,4 @@ with open(config_file, encoding="utf-8") as file:
 
             env.write(f"{key}={value}\n")
 
-print("Configuration loaded")
+print("Done")

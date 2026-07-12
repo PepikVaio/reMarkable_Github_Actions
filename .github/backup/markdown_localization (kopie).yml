@@ -1,0 +1,128 @@
+name: Restore text and translate Markdown documentation
+
+on:
+  workflow_call:
+
+env:
+  # ==============================
+  # CONFIG DATA
+  # ==============================
+  DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
+  DIACRITICS_MODEL: czech-diacritics_generator
+
+  # Downloading is only needed because this is a shared workflow called from external repos.
+  # Running standalone in this repo would only need: .tools/diacritics.py and .tools/translate.py, no PATH_TOOLS
+  PATH_TOOLS: /tmp/tools
+  PATH_DIACRITICS: /tmp/tools/.tools/markdown_diacritics.py
+  PATH_TRANSLATE: /tmp/tools/.tools/markdown_translate.py
+
+  # ===============================================================
+  # CONFIG (editable)
+  #
+  # COMMIT_MESSAGE: empty or choose message
+  #
+  # PROTECTED_WORDS:
+  #   Words that should never be changed by translation/correction
+  # ===============================================================
+  COMMIT_MESSAGE: "Updated documentation translations"
+  PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
+
+  # ======================================
+  # CONFIG DIACRITICS (editable)
+  #
+  # IS_ENABLED_DIACRITICS: only for cs
+  #
+  # DIACRITICS_FILE:
+  #   empty = all Markdown files
+  #   file  = only selected Markdown file
+  # ======================================
+  IS_ENABLED_DIACRITICS: true
+
+  DIACRITICS_FILE: ""
+  
+  # ======================================================
+  # CONFIG TRANSLATION (editable)
+  #
+  # LANGUAGE_SOURCE:
+  #   Language of the original Markdown files
+  #
+  # If LANGUAGE_SOURCE is "en":
+  #   Source files are read from repository root
+  #   Other languages are stored in .language/<language>/
+  #
+  # If LANGUAGE_SOURCE is not "en":
+  #   Source files are read from .language/<language>/
+  #   English translation is stored in repository root
+  #
+  # LANGUAGE_TRANSLATE:
+  #   Languages that should be generated
+  #
+  # PATH_LANGUAGE_OTHER:
+  #   Directory for translated languages
+  #
+  # TRANSLATE_FILE:
+  #   empty = all Markdown files
+  #   file = only selected Markdown file
+  # ======================================================
+  IS_ENABLED_TRANSLATE: true
+
+  LANGUAGE_SOURCE: cs
+  LANGUAGE_TRANSLATE: "en, de"
+  PATH_LANGUAGE_OTHER: .languages
+  TRANSLATE_FILE: ""
+
+permissions:
+  contents: write
+
+jobs:
+  main:
+    name: 'Restore text and translate Markdown documentation'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Downloading is only needed because this is a shared workflow called from external repos.
+      - name: Checkout tools
+        run: |
+          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+          if [ "${{ env.IS_ENABLED_TRANSLATE }}" = "true" ]; then
+            pip install transformers sentencepiece torch sacremoses
+          fi
+
+      - name: Add diacritics
+        if: env.IS_ENABLED_DIACRITICS == 'true' && env.LANGUAGE_SOURCE == 'cs'
+        run: |
+          python ${{ env.PATH_DIACRITICS }}
+
+      - name: Translate Markdown files
+        if: env.IS_ENABLED_TRANSLATE == 'true'
+        run: |
+          python ${{ env.PATH_TRANSLATE }}
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+
+          git commit -m "${{ env.COMMIT_MESSAGE }}"
+          git push

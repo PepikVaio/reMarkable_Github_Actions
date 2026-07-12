@@ -29,27 +29,27 @@ permissions:
 
 jobs:
 
-check:
-  name: Check Markdown changes
-  runs-on: ubuntu-latest
+  check:
+    name: Check Markdown changes
+    runs-on: ubuntu-latest
 
-  outputs:
-    deleted: ${{ steps.check.outputs.deleted }}
+    outputs:
+      deleted: ${{ steps.check.outputs.deleted }}
 
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-    - name: Check deleted Markdown
-      id: check
-      run: |
-        if git diff --name-status HEAD^ HEAD | grep -E "^D.*\.md$"; then
-          echo "deleted=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "deleted=false" >> "$GITHUB_OUTPUT"
-        fi
+      - name: Check deleted Markdown
+        id: check
+        run: |
+          if git diff --name-status HEAD^ HEAD | grep -E "^D.*\.md$"; then
+            echo "deleted=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deleted=false" >> "$GITHUB_OUTPUT"
+          fi
 
 
   # check:

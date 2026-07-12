@@ -13,8 +13,8 @@ env:
   # Downloading is only needed because this is a shared workflow called from external repos.
   # Running standalone in this repo would only need: .tools/diacritics.py and .tools/translate.py, no PATH_TOOLS
   PATH_TOOLS: /tmp/tools
-  PATH_DIACRITICS: /tmp/tools/.tools/diacritics.py
-  PATH_TRANSLATE: /tmp/tools/.tools/translate.py
+  PATH_DIACRITICS: /tmp/tools/.tools/markdown_diacritics.py
+  PATH_TRANSLATE: /tmp/tools/.tools/markdown_translate.py
 
   # ===============================================================
   # CONFIG (editable)

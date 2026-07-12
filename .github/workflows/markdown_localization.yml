@@ -21,7 +21,7 @@ env:
   # Running standalone in this repo would only need: .tools/diacritics.py and .tools/translate.py, no PATH_TOOLS
   PATH_TOOLS: /tmp/tools
   PATH_DIACRITICS: /tmp/tools/.tools/markdown_diacritics.py
-  PATH_CHECK: /tmp/tools/.tools/markdown_check.py
+  # PATH_CHECK: /tmp/tools/.tools/markdown_check.py
   PATH_TRANSLATE: /tmp/tools/.tools/markdown_translate.py
 
 permissions:
@@ -29,28 +29,51 @@ permissions:
 
 jobs:
 
-  check:
-    name: 'Check Markdown changes'
-    runs-on: ubuntu-latest
+check:
+  name: Check Markdown changes
+  runs-on: ubuntu-latest
 
-    outputs:
-      deleted: ${{ steps.check.outputs.deleted }}
+  outputs:
+    deleted: ${{ steps.check.outputs.deleted }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
 
-      # Downloading is only needed because this is a shared workflow called from external repos.
-      - name: Checkout tools
-        run: |
-          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+    - name: Check deleted Markdown
+      id: check
+      run: |
+        if git diff --name-status HEAD^ HEAD | grep -E "^D.*\.md$"; then
+          echo "deleted=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "deleted=false" >> "$GITHUB_OUTPUT"
+        fi
 
-      - name: Check deleted Markdown
-        id: check
-        run: |
-          python ${{ env.PATH_CHECK }}
+
+  # check:
+  #   name: 'Check Markdown changes'
+  #   runs-on: ubuntu-latest
+
+  #   outputs:
+  #     deleted: ${{ steps.check.outputs.deleted }}
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 2
+
+  #     # Downloading is only needed because this is a shared workflow called from external repos.
+  #     - name: Checkout tools
+  #       run: |
+  #         git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+
+  #     - name: Check deleted Markdown
+  #       id: check
+  #       run: |
+  #         python ${{ env.PATH_CHECK }}
 
   main:
     name: 'Restore text and translate Markdown documentation'

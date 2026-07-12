@@ -124,5 +124,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "${{ env.COMMIT_MESSAGE }} [skip ci]"
+          git commit -m "${{ env.COMMIT_MESSAGE }}"
           git push

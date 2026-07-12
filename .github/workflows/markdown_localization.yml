@@ -27,8 +27,35 @@ permissions:
   contents: write
 
 jobs:
+
+  check:
+    name: 'Check Markdown changes'
+    runs-on: ubuntu-latest
+
+    outputs:
+      deleted: ${{ steps.check.outputs.deleted }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: 'Check deleted Markdown'
+        id: check
+        run: |
+          if git diff --name-status HEAD^ HEAD | grep -E "^D.*\.md$"; then
+            echo "Markdown deleted"
+            echo "deleted=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Markdown changed or added"
+            echo "deleted=false" >> "$GITHUB_OUTPUT"
+          fi
+
   main:
     name: 'Restore text and translate Markdown documentation'
+    needs: check
+    if: needs.check.outputs.deleted != 'true'
     runs-on: ubuntu-latest
 
     steps:

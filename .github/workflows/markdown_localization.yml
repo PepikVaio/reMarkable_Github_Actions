@@ -23,61 +23,6 @@ env:
   PATH_DIACRITICS: /tmp/tools/.tools/markdown_diacritics.py
   PATH_TRANSLATE: /tmp/tools/.tools/markdown_translate.py
 
-  # ===============================================================
-  # CONFIG (editable)
-  #
-  # COMMIT_MESSAGE: empty or choose message
-  #
-  # PROTECTED_WORDS:
-  #   Words that should never be changed by translation/correction
-  # ===============================================================
-  # COMMIT_MESSAGE: "Updated documentation translations"
-  # PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
-
-  # ======================================
-  # CONFIG DIACRITICS (editable)
-  #
-  # IS_ENABLED_DIACRITICS: only for cs
-  #
-  # DIACRITICS_FILE:
-  #   empty = all Markdown files
-  #   file  = only selected Markdown file
-  # ======================================
-  # IS_ENABLED_DIACRITICS: true
-
-  # DIACRITICS_FILE: ""
-  
-  # ======================================================
-  # CONFIG TRANSLATION (editable)
-  #
-  # LANGUAGE_SOURCE:
-  #   Language of the original Markdown files
-  #
-  # If LANGUAGE_SOURCE is "en":
-  #   Source files are read from repository root
-  #   Other languages are stored in .language/<language>/
-  #
-  # If LANGUAGE_SOURCE is not "en":
-  #   Source files are read from .language/<language>/
-  #   English translation is stored in repository root
-  #
-  # LANGUAGE_TRANSLATE:
-  #   Languages that should be generated
-  #
-  # PATH_LANGUAGE_OTHER:
-  #   Directory for translated languages
-  #
-  # TRANSLATE_FILE:
-  #   empty = all Markdown files
-  #   file = only selected Markdown file
-  # ======================================================
-  # IS_ENABLED_TRANSLATE: true
-
-  # LANGUAGE_SOURCE: cs
-  # LANGUAGE_TRANSLATE: "en, de"
-  # PATH_LANGUAGE_OTHER: .languages
-  # TRANSLATE_FILE: ""
-
 permissions:
   contents: write
 
@@ -113,7 +58,7 @@ jobs:
             pip install transformers sentencepiece torch sacremoses
           fi
 
-      - name: Add diacritics
+      - name: Restore text (add diacritics)
         if: env.IS_ENABLED_DIACRITICS == 'true' && env.LANGUAGE_SOURCE == 'cs'
         run: |
           python ${{ env.PATH_DIACRITICS }}

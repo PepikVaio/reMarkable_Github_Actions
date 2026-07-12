@@ -42,6 +42,11 @@ jobs:
         with:
           fetch-depth: 2
 
+      # Downloading is only needed because this is a shared workflow called from external repos.
+      - name: Checkout tools
+        run: |
+          git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+
       - name: Check deleted Markdown
         id: check
         run: |

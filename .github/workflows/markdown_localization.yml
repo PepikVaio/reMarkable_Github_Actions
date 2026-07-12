@@ -3,12 +3,19 @@ name: Restore text and translate Markdown documentation
 on:
   workflow_call:
 
+    inputs:
+      config_file:
+        required: true
+        type: string
+
 env:
   # ==============================
   # CONFIG DATA
   # ==============================
   DIACRITICS_API: http://lindat.mff.cuni.cz/services/korektor/api/correct
   DIACRITICS_MODEL: czech-diacritics_generator
+
+  PATH_CONFIG: ${{ inputs.config_file }}
 
   # Downloading is only needed because this is a shared workflow called from external repos.
   # Running standalone in this repo would only need: .tools/diacritics.py and .tools/translate.py, no PATH_TOOLS
@@ -24,8 +31,8 @@ env:
   # PROTECTED_WORDS:
   #   Words that should never be changed by translation/correction
   # ===============================================================
-  COMMIT_MESSAGE: "Updated documentation translations"
-  PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
+  # COMMIT_MESSAGE: "Updated documentation translations"
+  # PROTECTED_WORDS: "Xovi,Qt,QML,reMarkable"
 
   # ======================================
   # CONFIG DIACRITICS (editable)
@@ -36,9 +43,9 @@ env:
   #   empty = all Markdown files
   #   file  = only selected Markdown file
   # ======================================
-  IS_ENABLED_DIACRITICS: true
+  # IS_ENABLED_DIACRITICS: true
 
-  DIACRITICS_FILE: ""
+  # DIACRITICS_FILE: ""
   
   # ======================================================
   # CONFIG TRANSLATION (editable)
@@ -64,12 +71,12 @@ env:
   #   empty = all Markdown files
   #   file = only selected Markdown file
   # ======================================================
-  IS_ENABLED_TRANSLATE: true
+  # IS_ENABLED_TRANSLATE: true
 
-  LANGUAGE_SOURCE: cs
-  LANGUAGE_TRANSLATE: "en, de"
-  PATH_LANGUAGE_OTHER: .languages
-  TRANSLATE_FILE: ""
+  # LANGUAGE_SOURCE: cs
+  # LANGUAGE_TRANSLATE: "en, de"
+  # PATH_LANGUAGE_OTHER: .languages
+  # TRANSLATE_FILE: ""
 
 permissions:
   contents: write
@@ -89,6 +96,10 @@ jobs:
       - name: Checkout tools
         run: |
           git clone --depth 1 https://github.com/PepikVaio/reMarkable_Github_Actions.git ${{ env.PATH_TOOLS }}
+
+      - name: Load configuration
+        run: |
+          python ${{ env.PATH_TOOLS }}/.tools/markdown_config.py "${{ inputs.config_file }}"
 
       - name: Setup Python
         uses: actions/setup-python@v5

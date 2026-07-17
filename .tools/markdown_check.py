@@ -7,7 +7,7 @@ import subprocess
 # Checks the last commit:
 # - Deleted Markdown files (.md) -> stop workflow
 # - Added or modified Markdown files -> continue workflow
-# =======================================================
+# ========================================================
 def main():
     # Get changed files between previous and current commit
     result = subprocess.run(
@@ -28,12 +28,12 @@ def main():
             deleted_markdown = True
             break
 
-    # ==================================
+    # ===================================
     # Send result back to GitHub Actions
-    # ==================================
+    # ===================================
     # true  -> workflow will stop
     # false -> workflow continues
-    # ===========================
+    # ============================
     if deleted_markdown:
         value = "true"
         print(" ")

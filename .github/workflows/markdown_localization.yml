@@ -71,7 +71,7 @@ jobs:
 
       - name: Load configuration
         run: |
-          python ${{ env.PATH_TOOLS }}/.tools/markdown_config.py "${{ inputs.config_file }}"
+          python ${{ env.PATH_TOOLS }}/.tools/markdown_Settings.py "${{ inputs.config_file }}"
 
       - name: Setup Python
         uses: actions/setup-python@v5
